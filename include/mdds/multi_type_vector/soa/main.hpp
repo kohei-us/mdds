@@ -1174,14 +1174,17 @@ public:
      * <p>This call is equivalent of clear() if the container consists of no
      * managed element blocks.</p>
      *
-     * <p>When copy-on-write is enabled and this container is currently
-     * borrowing shared blocks, this method detaches first, like any other
-     * mutating method.  The elements released are then the post-detach
-     * clones; the originally stored objects remain co-owned by the other
-     * sharers.</p>
+     * <p>When copy-on-write is enabled, this method requires the container to
+     * be the sole owner of its element blocks, and throws
+     * mdds::mtv::shared_block_error while the container is borrowing shared
+     * blocks.  This method does not return the released elements, so it
+     * relies on element pointers the caller obtained beforehand; a detach
+     * during the call would turn the released elements into freshly made
+     * clones that those pointers do not reference.  Call detach() first, and
+     * obtain the element pointers afterwards.</p>
      *
-     * @warning Any element pointers obtained before the sharing began keep
-     *          referencing those originals, not the released clones.
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
      */
     void release();
 
@@ -1195,19 +1198,22 @@ public:
      * either the starting or the ending position is outside the current
      * container size.</p>
      *
-     * <p>When copy-on-write is enabled and this container is currently
-     * borrowing shared blocks, this method detaches first, like any other
-     * mutating method.  The elements released are then the post-detach
-     * clones; the originally stored objects remain co-owned by the other
-     * sharers.</p>
-     *
-     * @warning Any element pointers obtained before the sharing began keep
-     *          referencing those originals, not the released clones.
+     * <p>When copy-on-write is enabled, this method requires the container to
+     * be the sole owner of its element blocks, and throws
+     * mdds::mtv::shared_block_error while the container is borrowing shared
+     * blocks.  This method does not return the released elements, so it
+     * relies on element pointers the caller obtained beforehand; a detach
+     * during the call would turn the released elements into freshly made
+     * clones that those pointers do not reference.  Call detach() first, and
+     * obtain the element pointers afterwards.</p>
      *
      * @param start_pos starting position
      * @param end_pos ending position, inclusive.
      * @return iterator position pointing to the block where the elements are
      *         released.
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
      */
     iterator release_range(size_type start_pos, size_type end_pos);
 
@@ -1234,14 +1240,14 @@ public:
      * either the starting or the ending position is outside the current
      * container size.</p>
      *
-     * <p>When copy-on-write is enabled and this container is currently
-     * borrowing shared blocks, this method detaches first, like any other
-     * mutating method.  The elements released are then the post-detach
-     * clones; the originally stored objects remain co-owned by the other
-     * sharers.</p>
-     *
-     * @warning Any element pointers obtained before the sharing began keep
-     *          referencing those originals, not the released clones.
+     * <p>When copy-on-write is enabled, this method requires the container to
+     * be the sole owner of its element blocks, and throws
+     * mdds::mtv::shared_block_error while the container is borrowing shared
+     * blocks.  This method does not return the released elements, so it
+     * relies on element pointers the caller obtained beforehand; a detach
+     * during the call would turn the released elements into freshly made
+     * clones that those pointers do not reference.  Call detach() first, and
+     * obtain the element pointers afterwards.</p>
      *
      * @param pos_hint Position hint to specify which block to start when
      *                 searching for the right blocks in which elements are
@@ -1250,6 +1256,9 @@ public:
      * @param end_pos ending position, inclusive.
      * @return iterator position pointing to the block where the elements are
      *         released.
+     *
+     * @exception mdds::mtv::shared_block_error The container is currently
+     *                borrowing shared blocks under copy-on-write.
      */
     iterator release_range(position_hint pos_hint, size_type start_pos, size_type end_pos);
 
@@ -1386,11 +1395,10 @@ public:
      * <p>Detaching invalidates previously obtained iterators and position
      * objects, but position hint values remain valid.</p>
      *
-     * @note Mutating methods detach automatically; no need to call this
-     * explicitly ahead of time.  You do need to call this before using the
-     * non-const overloads of position(), begin(), end(), rbegin() and rend(),
-     * which throw mdds::mtv::shared_block_error while the container is
-     * borrowing shared blocks.  Calling this explicitly can also be useful
+     * @note Most mutating methods detach automatically; no need to call this
+     * explicitly ahead of time.  You do need to call this before using any
+     * method that throws mdds::mtv::shared_block_error while the container
+     * is borrowing shared blocks.  Calling this explicitly can also be useful
      * when you want control over when the detach occurs; for instance, the
      * automatic detach a mutating method performs is not thread-safe, so you
      * may want to detach up front before making the container accessible to

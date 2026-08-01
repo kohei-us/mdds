@@ -135,17 +135,19 @@ you may want to detach up front before making the container accessible to
 multiple threads, instead of letting a later mutation trigger the detach on
 demand.
 
-Releasing elements, by contrast, requires no explicit detach.
+The :cpp:func:`~mdds::mtv::soa::multi_type_vector::release` overloads that
+return the released element require no explicit detach: on a sharing
+container they detach automatically like any other mutating method, and the
+element the caller receives is the container's private post-detach clone.
+
+The overloads that do not return the released elements - the release-all
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::release` and
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range` transfer
-ownership of stored elements to the caller, and on a sharing container they
-detach automatically like any other mutating method.  The detach is also what
-makes the released elements safe to own.  If the container released them while
-still borrowing, the released elements - for a managed block, pointers to
-objects it owns - would still point into storage shared with other containers,
-and any modification made through them would affect all the sharers.
-Detaching first turns the container's elements into private clones, so the
-caller receives objects no other container references.
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range` - rely on the
+caller to obtain element pointers beforehand, and an implicit detach during the
+call would immediately leak the released elements since the caller-held pointers
+do not reference the release elements.  These overloads therefore throw
+:cpp:class:`~mdds::mtv::shared_block_error` while the container is sharing; call
+``detach()`` first, and obtain the element pointers afterwards.
 
 .. note::
 
@@ -162,10 +164,11 @@ Mutable access under copy-on-write
 Every method that mutates a borrowing container has to detach it first.  The
 methods fall into two groups, differing in whether that detach happens
 automatically or must be requested by the caller.  Methods whose name states the
-mutation - ``set()``, ``insert()``, ``release()`` and the rest of the mutating
-interface - detach implicitly: calling them is itself the declaration of intent
-to mutate.  The non-const overloads of ``begin()``, ``end()``, ``rbegin()``,
-``rend()`` and ``position()`` are different.  They throw
+mutation - ``set()``, ``insert()`` and most of the mutating interface - detach
+implicitly: calling them is itself the declaration of intent to mutate (the
+exceptions are the release overloads covered in the previous section).  The
+non-const overloads of ``begin()``, ``end()``, ``rbegin()``, ``rend()`` and
+``position()`` are different.  They throw
 :cpp:class:`~mdds::mtv::shared_block_error` while the container is borrowing
 shared blocks.  Once the container is the sole owner of its blocks - either
 because it has detached or because it never shared them - these overloads

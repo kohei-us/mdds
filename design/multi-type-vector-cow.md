@@ -86,3 +86,52 @@ copy construction would succeed even when the source contains a
 noncopyable element block but later detaching would throw.  Throwing on a
 noncopyable element block up front is a way to maintain behavior parity
 between COW and non-COW instances.
+
+## Mutable access
+
+Whether a method detaches on its own or asks the caller to detach first
+comes down to naming.  A method whose name states the mutation -
+`set()`, `insert()`, `transfer()` and most of the mutating interface -
+already tells the reader that the container will change, so those
+simply detach and proceed.  The non-const overloads of
+`position()`, `begin()`, `end()`, `rbegin()` and `rend()` say nothing
+of the sort: they are spelled exactly like their const counterparts,
+and the compiler alone decides which of the two a call binds to.  Those
+throw `shared_block_error` while `m_cow_store` is non-null instead of
+detaching, for a few reasons:
+
+- If they detached on their own, a line that looks like a cheap lookup
+  could deep-clone every shared block, and nothing in the source would
+  tell the two apart.
+- A silent detach would also quietly defeat the feature.  An accidental
+  non-const call site would not produce a bug - the sharing would just
+  stop, and nothing would ever report it.  The throw makes the missing
+  `detach()` visible the first time it actually matters.
+- Detaching is not thread-safe.  If an accidental non-const access
+  happens during a parallel read phase, better an exception than a data
+  race, and an explicit `detach()` lets the caller pick the point where
+  the detach runs.
+
+There is deliberately no traits policy to pick a different behavior;
+every COW container can be audited the same way.
+
+### Releasing while sharing
+
+The release overloads split on whether the method itself delivers the
+released element.  `release(pos)` and `release(pos, value)` detach
+implicitly like the other named mutators, and the transfer they promise
+is exactly the transfer that happens: the caller receives the
+post-detach clone.
+
+The release-all `release()` and `release_range()` do not return the
+released elements; their use relies on element pointers the caller
+obtained beforehand, and those are exactly what a detach invalidates.  Had
+they detached implicitly, the released elements would be freshly made
+clones that the caller-held pointers no longer reference - the clones
+leak, and deleting the caller-held pointers later double-frees the
+originals.  Since such leak is not easy to detect by looking at the call
+site code alone, these methods throw `shared_block_error` instead of
+automatically detaching.
+
+In short, an implicit detach is safe when the method itself returns the
+transferred objects; otherwise the method fails by throwing.

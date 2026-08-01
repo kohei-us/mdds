@@ -20,11 +20,13 @@ mdds 4.0.0 (next target)
     shares the source's element blocks until the first modification,
     at which point it makes its own private copy.  Mutating methods
     make this copy automatically; the non-const overloads of the
-    iterator and position accessors instead throw the new
-    shared_block_error exception while the instance is sharing, and
-    require an explicit call to the new detach() method first.  Also
-    added is_shared() to report the sharing state, and a clone()
-    overload that takes a caller-supplied event handler.
+    iterator and position accessors, as well as the release() and
+    release_range() overloads that do not return the released
+    elements, instead throw the new shared_block_error exception while
+    the instance is sharing, and require an explicit call to the new
+    detach() method first.  Also added is_shared() to report the
+    sharing state, and a clone() overload that takes a caller-supplied
+    event handler.
 
   * added new code examples in the documentation covering copy-on-write
     and cloning with a custom event handler.

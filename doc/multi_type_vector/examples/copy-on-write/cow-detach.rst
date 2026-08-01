@@ -20,7 +20,8 @@ behind it, and how :cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()`
 resolves it.
 
 This example also covers
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release()`.  Being a mutator,
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release()`, specifically an
+overload that returns the released element.  Being a mutator,
 it follows the same rule as every other mutator under copy-on-write: on a
 sharing container it detaches automatically rather than throwing, since its
 name alone states the intent to mutate and there is no const overload to
@@ -105,9 +106,9 @@ giving:
 
 Finally we pull an image out of the album with
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::release` to hand it off
-elsewhere.  Unlike the accessors above, it never requires an explicit detach:
-even if the album were still sharing, it would detach automatically like any
-other mutating method.  In our flow the
+elsewhere.  Unlike the accessors above, this overload never requires an
+explicit detach: even if the album were still sharing, it would detach
+automatically like any other mutating method.  In our flow the
 album has already detached, so the call simply succeeds.  The point to observe
 is which object comes back: the extracted image is the album's private copy
 created by that detach, while the snapshot still holds the originally stored
@@ -129,9 +130,10 @@ giving:
 The last line confirms the extracted image is a distinct object from the one
 the snapshot holds at the same position.
 
-Although not used in this example,
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range()` also detaches
-automatically just like
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release()`.
+Although not used in this example, the ``release()`` and
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range()` overloads
+that do not return the released elements behave differently: they throw
+:cpp:class:`~mdds::mtv::shared_block_error` while the container is sharing,
+because they rely on element pointers the caller obtained beforehand.
 
 See :ref:`mtv-copy-on-write` for the mutable-access rules in general.

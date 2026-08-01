@@ -70,9 +70,9 @@ void test_cow_both_side()
 }
 
 /**
- * The four hint-less release() / release_range() overloads require sole
- * ownership: they detach first like any other mutating method, then succeed,
- * leaving the other sharer unaffected.
+ * The release() overloads that return the released element detach first like
+ * any other mutating method, then succeed, leaving the other sharer
+ * unaffected.
  */
 template<typename mtv_type>
 void test_cow_release_detaches()
@@ -108,7 +108,7 @@ void test_cow_release_detaches()
     }
 
     {
-        // release(pos, value) and release_range() detach the same way.
+        // release(pos, value) detaches the same way.
         mtv_type src;
         src.template push_back<custom_num>(1.1);
         src.template push_back<custom_num>(1.2);
@@ -121,37 +121,62 @@ void test_cow_release_detaches()
         borrower.release(0, v);
         TEST_ASSERT(v.value == 1.1);
         TEST_ASSERT(!borrower.is_shared());
-
-        borrower.release_range(1, 2);
-        TEST_ASSERT(borrower.is_empty(1));
-        TEST_ASSERT(borrower.is_empty(2));
+        TEST_ASSERT(borrower.is_empty(0));
 
         TEST_ASSERT(src.template get<custom_num>(0).value == 1.1);
         TEST_ASSERT(src.template get<custom_num>(1).value == 1.2);
         TEST_ASSERT(src.template get<custom_num>(2).value == 1.3);
     }
-
-    {
-        // The release-all overload detaches too, then empties the container.
-        mtv_type src;
-        src.template push_back<custom_num>(1.1);
-        src.template push_back<custom_num>(1.2);
-
-        mtv_type borrower(src);
-        TEST_ASSERT(same_block_pointers(src, borrower));
-
-        borrower.release();
-        TEST_ASSERT(!borrower.is_shared());
-        TEST_ASSERT(borrower.empty());
-
-        TEST_ASSERT(src.template get<custom_num>(0).value == 1.1);
-        TEST_ASSERT(src.template get<custom_num>(1).value == 1.2);
-    }
 }
 
 /**
- * The two pos_hint release() / release_range() overloads detach just like the
- * hint-less ones; the hint value remains valid across the detach.
+ * The release() and release_range() overloads that do not return the
+ * released elements require sole ownership: they throw shared_block_error
+ * while the container is borrowing shared blocks, and succeed after an
+ * explicit detach().
+ */
+template<typename mtv_type>
+void test_cow_nonreturning_release_requires_sole_ownership()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    mtv_type src;
+    src.template push_back<custom_num>(1.1);
+    src.template push_back<custom_num>(1.2);
+    src.template push_back<custom_num>(1.3);
+
+    mtv_type borrower(src);
+    TEST_ASSERT(same_block_pointers(src, borrower)); // both borrow the shared blocks
+
+    assert_shared_block_error([&] { borrower.release(); });
+    assert_shared_block_error([&] { borrower.release_range(0, 1); });
+    assert_shared_block_error([&] { borrower.release_range(mdds::mtv::position_hint{}, 0, 1); });
+
+    // The throws left the borrower untouched: still sharing, contents intact.
+    TEST_ASSERT(borrower.is_shared());
+    TEST_ASSERT(same_block_pointers(src, borrower));
+    TEST_ASSERT(borrower.template get<custom_num>(0).value == 1.1);
+    TEST_ASSERT(borrower.template get<custom_num>(1).value == 1.2);
+    TEST_ASSERT(borrower.template get<custom_num>(2).value == 1.3);
+
+    // After an explicit detach the calls succeed.
+    borrower.detach();
+    borrower.release_range(0, 1);
+    TEST_ASSERT(borrower.is_empty(0));
+    TEST_ASSERT(borrower.is_empty(1));
+    borrower.release();
+    TEST_ASSERT(borrower.empty());
+
+    // The other sharer is unaffected.
+    TEST_ASSERT(src.template get<custom_num>(0).value == 1.1);
+    TEST_ASSERT(src.template get<custom_num>(1).value == 1.2);
+    TEST_ASSERT(src.template get<custom_num>(2).value == 1.3);
+}
+
+/**
+ * The pos_hint release(pos, value) overload detaches just like the hint-less
+ * ones; the hint value remains valid across the detach, which the hinted
+ * release_range() call after the detach demonstrates.
  */
 template<typename mtv_type>
 void test_cow_release_pos_hint_detaches()

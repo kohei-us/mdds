@@ -25,6 +25,7 @@ void run_all_tests()
     test_cow_release_detaches<cow_mtv_type>();
     test_cow_release_pos_hint_detaches<cow_mtv_type>();
     test_cow_release_clone_identity<cow_mtv_type>();
+    test_cow_nonreturning_release_requires_sole_ownership<cow_mtv_type>();
     test_cow_detach_noop_when_sole_owner<cow_mtv_type>();
     test_cow_hinted_mutation<cow_mtv_type>();
     test_cow_lifetime<cow_mtv_type>();

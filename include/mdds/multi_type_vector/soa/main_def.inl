@@ -4003,7 +4003,11 @@ void multi_type_vector<Traits>::release()
 {
     MDDS_MTV_TRACE(mutator);
 
-    detach_impl();
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::release: container is shared; call detach() first");
+    }
 
 #ifdef MDDS_MULTI_TYPE_VECTOR_DEBUG
     std::ostringstream os_prev_block;
@@ -4047,7 +4051,11 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
 {
     MDDS_MTV_TRACE_ARGS(mutator, "start_pos=" << start_pos << "; end_pos=" << end_pos);
 
-    detach_impl();
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::release_range: container is shared; call detach() first");
+    }
 
     size_type block_index1 = get_block_position(start_pos);
     if (block_index1 == m_block_store.positions.size())
@@ -4064,7 +4072,11 @@ typename multi_type_vector<Traits>::iterator multi_type_vector<Traits>::release_
     MDDS_MTV_TRACE_ARGS(
         mutator_with_pos_hint, "pos_hint=" << pos_hint << "; start_pos=" << start_pos << "; end_pos=" << end_pos);
 
-    detach_impl();
+    if constexpr (Traits::enable_cow)
+    {
+        if (m_cow_store)
+            throw shared_block_error("multi_type_vector::release_range: container is shared; call detach() first");
+    }
 
     size_type block_index1 = get_block_position(pos_hint, start_pos);
     if (block_index1 == m_block_store.positions.size())

@@ -130,11 +130,10 @@ public:
 };
 
 /**
- * Exception thrown when a non-const accessor that provides mutable access,
- * such as the non-const overloads of position(), begin(), end(), rbegin() and
- * rend(), is called while the container is still borrowing blocks shared
- * under copy-on-write.  Call detach() first to make the container the sole
- * owner of its element blocks.
+ * Exception thrown when a method that requires the container to be the sole
+ * owner of its element blocks is called while the container is still
+ * borrowing blocks shared under copy-on-write.  Call detach() first to make
+ * the container the sole owner of its element blocks.
  */
 class shared_block_error : public mdds::general_error
 {
