@@ -65,6 +65,25 @@ applies the mutation.  The other borrowers are unaffected and keep referring to
 the original shared storage.  Detaching happens once; subsequent mutations
 operate in place on the now solely-owned blocks.
 
+When the container being detached is the only remaining sharer - every other
+sharer has already detached or been destroyed - there is nothing left to
+protect, so instead of copying the blocks the container simply takes back
+direct ownership of them.  The block pointers are preserved in that case, and
+no element block events fire.
+
+As with standard containers, where a non-const operation may invalidate
+iterators, a detach - whether automatic or explicit - invalidates previously
+obtained iterators and position objects.  Position hint values, by contrast,
+remain valid across a detach: they carry no pointers into the container, and
+the block structure is unchanged.
+
+Use :cpp:func:`~mdds::mtv::soa::multi_type_vector::is_shared` to query whether
+a container currently references a shared block store.  Note that it may keep
+returning ``true`` after every other sharer has detached; it flips to
+``false`` only when the container itself detaches.  The method is also
+available when copy-on-write is disabled - it then always returns ``false`` -
+so generic code can call it unconditionally.
+
 How detaching duplicates blocks
 -------------------------------
 
@@ -106,45 +125,60 @@ detach by hand.  When you do need to force sole ownership up front, call
 deferred duplication immediately when the container is borrowing, and is a no-op
 when the container already owns its blocks or when COW is disabled.
 
-One such use case is when you need to release elements from the ownership of
-the container.  Both
+The main occasion to call it is mutable access: as the next section describes,
+the non-const overloads of ``position()``, ``begin()``, ``end()``, ``rbegin()``
+and ``rend()`` refuse to run while the container is borrowing; you must
+explicitly call ``detach()`` before you can call them.  An explicit detach can
+also be useful whenever you want control over when the detach occurs; for
+instance, the automatic detach a mutating method performs is not thread-safe, so
+you may want to detach up front before making the container accessible to
+multiple threads, instead of letting a later mutation trigger the detach on
+demand.
+
+Releasing elements, by contrast, requires no explicit detach.
 :cpp:func:`~mdds::mtv::soa::multi_type_vector::release` and
-:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range` hand ownership of
-stored elements back to the caller.  If the container were still borrowing,
-however, those released elements - for a managed block, pointers to objects it
-owns - would still point into storage shared with other containers.  Any
-modification made to those "released" elements would therefore affect the
-shared storage and all its borrowers - not the expected behavior.  This is why
-the container throws :cpp:class:`~mdds::mtv::shared_block_error` when attempting
-to release elements while it is still borrowing.  The
-:ref:`mtv-example-cow-detach` example walks through this precondition and how
-``detach()`` satisfies it.
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range` transfer
+ownership of stored elements to the caller, and on a sharing container they
+detach automatically like any other mutating method.  The detach is also what
+makes the released elements safe to own.  If the container released them while
+still borrowing, the released elements - for a managed block, pointers to
+objects it owns - would still point into storage shared with other containers,
+and any modification made through them would affect all the sharers.
+Detaching first turns the container's elements into private clones, so the
+caller receives objects no other container references.
 
-.. warning::
+.. note::
 
-   :cpp:func:`~mdds::mtv::soa::multi_type_vector::release` and
-   :cpp:func:`~mdds::mtv::soa::multi_type_vector::release_range` require the
-   container to be the sole owner of its blocks.  Called while the container is
-   still borrowing, they throw :cpp:class:`~mdds::mtv::shared_block_error`.
-   Call :cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()` first.
+   A release on a sharing container provides the object cloned post-detach,
+   not the object stored in the shared block prior to the detach; that
+   original remains co-owned by the other sharers.
 
-Iterators under copy-on-write
------------------------------
+The :ref:`mtv-example-cow-detach` example illustrates both the throwing
+accessors and a release under sharing.
 
-When copy-on-write is on, a container hands out read-only iterators only.  The
-non-const ``begin``, ``end``, ``rbegin``, ``rend``, and ``position`` accessors
-are disabled for the whole type - not just while it happens to be sharing - so
-``v.begin()`` always gives you a ``const_iterator``.  That is deliberate: a
-mutable iterator would let you edit shared blocks directly and skip the private
-copy that is meant to happen on the first write.  Modify a container through its
-own methods instead, which detach automatically as needed.
+Mutable access under copy-on-write
+----------------------------------
 
-Note that this does not get in the way of using position hints with the hinted
-mutator methods: a default-constructed :cpp:struct:`~mdds::mtv::position_hint`
-requires no iterator access to seed, and the iterator a mutator returns converts
-back into a hint on assignment.  The usual feed-back pattern of ``hint =
-v.set(hint, pos, value);`` therefore works unchanged under copy-on-write.  See
-:ref:`mtv-perf-considerations-pos-hint` for how position hints work.
+Every method that mutates a borrowing container has to detach it first.  The
+methods fall into two groups, differing in whether that detach happens
+automatically or must be requested by the caller.  Methods whose name states the
+mutation - ``set()``, ``insert()``, ``release()`` and the rest of the mutating
+interface - detach implicitly: calling them is itself the declaration of intent
+to mutate.  The non-const overloads of ``begin()``, ``end()``, ``rbegin()``,
+``rend()`` and ``position()`` are different.  They throw
+:cpp:class:`~mdds::mtv::shared_block_error` while the container is borrowing
+shared blocks.  Once the container is the sole owner of its blocks - either
+because it has detached or because it never shared them - these overloads
+succeed, and modifying elements through the returned iterators and position
+objects is safe: no other container references the blocks being modified.
+
+The throw happens before any state change, so a caught ``shared_block_error``
+leaves the container untouched.  To use the non-const overloads on a container
+that may be sharing, call
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()` first::
+
+    store.detach(); // no-op when the container is not sharing
+    auto pos = store.position(row);
 
 Copying a const source is not read-only
 ---------------------------------------

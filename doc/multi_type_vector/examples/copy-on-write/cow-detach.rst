@@ -25,7 +25,7 @@ it follows the same rule as every other mutator under copy-on-write: on a
 sharing container it detaches automatically rather than throwing, since its
 name alone states the intent to mutate and there is no const overload to
 confuse it with.  It still warrants a closer look here, because it is the one
-mutator that hands stored objects back to the caller, and that makes the
+mutator that transfers stored objects to the caller, and that makes the
 automatic detach observable: the object the caller receives is from the
 container's private post-detach clone, not from the shared block prior to
 the call.
