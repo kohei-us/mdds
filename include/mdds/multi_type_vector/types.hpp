@@ -20,6 +20,7 @@
 #include <vector>
 #include <ostream>
 #include <sstream>
+#include <tuple>
 #include <type_traits>
 
 #if defined(MDDS_UNIT_TEST) || defined(MDDS_MULTI_TYPE_VECTOR_DEBUG)
@@ -264,7 +265,26 @@ inline constexpr bool has_clone_value = false;
 template<typename ValueT>
 inline constexpr bool has_clone_value<ValueT, std::void_t<decltype(clone_value<ValueT>{})>> = true;
 
+/**
+ * Whether or not a type is a clone_value specialization, for any value type.
+ */
+template<typename T>
+inline constexpr bool is_clone_value_v = false;
+
+template<typename ValueT>
+inline constexpr bool is_clone_value_v<clone_value<ValueT>> = true;
+
 } // namespace detail
+
+/**
+ * A clone_value specialization that declares no exec_policy.  Such a
+ * specialization may carry state across the elements it clones, and an
+ * instance of it may be passed by the caller to be used in place of the
+ * block-local instance.  A specialization with an exec_policy is stateless by
+ * contract, so there is no state to pass.
+ */
+template<typename CV>
+concept stateful_clone_value = detail::is_clone_value_v<CV> && !detail::has_exec_policy<CV>;
 
 /**
  * Default variant which throws element_block_error.
@@ -323,7 +343,21 @@ struct clone_block<BlockT, std::void_t<decltype(clone_value<typename BlockT::val
     using value_type = typename BlockT::value_type;
     using CV = clone_value<value_type>;
 
-    BlockT* operator()(const BlockT& src) const
+    /**
+     * Clone a block.  By default a new clone_value instance is created to
+     * clone the values of the block.  If the caller passes clone_value
+     * instances and one of them is of the clone_value type of this block, the
+     * values are cloned through that instance instead, which lets it carry
+     * state across the blocks it is passed to.  Passed instances of other
+     * clone_value types are ignored.
+     *
+     * @param src Block to clone.
+     * @param passed Caller-passed clone_value instances.
+     *
+     * @return Cloned block.
+     */
+    template<typename... Passed>
+    BlockT* operator()(const BlockT& src, Passed&... passed) const
     {
         if constexpr (detail::has_exec_policy<CV>)
         {
@@ -346,14 +380,30 @@ struct clone_block<BlockT, std::void_t<decltype(clone_value<typename BlockT::val
             auto& dest_store = dest_blk->store();
             detail::reserve(dest_store, src.store().size());
 
-            // One cloner cloning the stored values in order, so that it may
-            // carry state across the elements of the block.
-            CV cloner;
-            for (const auto& v : src.store())
-                dest_store.push_back(cloner(v));
+            // check if the clone_value type is the type of one of the passed instances
+            if constexpr ((std::is_same_v<CV, Passed> || ...))
+            {
+                // pick the right type from the passed instances
+                CV& cloner = std::get<CV&>(std::forward_as_tuple(passed...));
+                clone_values(src, dest_store, cloner);
+            }
+            else
+            {
+                // One cloner cloning the stored values in order, so that it may
+                // carry state across the elements of the block.
+                CV cloner;
+                clone_values(src, dest_store, cloner);
+            }
 
             return dest_blk.release();
         }
+    }
+
+private:
+    static void clone_values(const BlockT& src, store_type& dest_store, CV& cloner)
+    {
+        for (const auto& v : src.store())
+            dest_store.push_back(cloner(v));
     }
 };
 
@@ -794,9 +844,18 @@ public:
         return new Self(get(blk));
     }
 
-    static Self* clone_block(const base_element_block& src)
+    /**
+     * Clone a block through mdds::mtv::clone_block, forwarding the passed
+     * clone_value instances when its operator() accepts them; a clone_block
+     * form that takes none clones the block as if none were passed.
+     */
+    template<typename... Passed>
+    static Self* clone_block(const base_element_block& src, Passed&... passed)
     {
-        return mdds::mtv::clone_block<Self>{}(get(src));
+        if constexpr (std::is_invocable_v<const mdds::mtv::clone_block<Self>&, const Self&, Passed&...>)
+            return mdds::mtv::clone_block<Self>{}(get(src), passed...);
+        else
+            return mdds::mtv::clone_block<Self>{}(get(src));
     }
 };
 
@@ -831,9 +890,18 @@ public:
         throw element_block_error("attempted to copy a noncopyable element block");
     }
 
-    static Self* clone_block(const base_element_block& src)
+    /**
+     * Clone a block through mdds::mtv::clone_block, forwarding the passed
+     * clone_value instances when its operator() accepts them; a clone_block
+     * form that takes none clones the block as if none were passed.
+     */
+    template<typename... Passed>
+    static Self* clone_block(const base_element_block& src, Passed&... passed)
     {
-        return mdds::mtv::clone_block<Self>{}(get(src));
+        if constexpr (std::is_invocable_v<const mdds::mtv::clone_block<Self>&, const Self&, Passed&...>)
+            return mdds::mtv::clone_block<Self>{}(get(src), passed...);
+        else
+            return mdds::mtv::clone_block<Self>{}(get(src));
     }
 };
 

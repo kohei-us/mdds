@@ -60,13 +60,24 @@ struct element_block_funcs
         return f(block);
     }
 
-    static base_element_block* clone_block(const base_element_block& block)
+    /**
+     * Clone a block, optionally through caller-passed clone_value instances.
+     *
+     * @param block Block to clone.
+     * @param passed Caller-passed clone_value instances, forwarded to the
+     *               clone_block of the block type.
+     *
+     * @return Cloned block.
+     */
+    template<typename... Passed>
+    static base_element_block* clone_block(const base_element_block& block, Passed&... passed)
     {
-        static const std::unordered_map<element_t, std::function<base_element_block*(const base_element_block&)>>
-            func_map{{Ts::block_type, Ts::clone_block}...};
+        static const std::unordered_map<
+            element_t, std::function<base_element_block*(const base_element_block&, Passed&...)>>
+            func_map{{Ts::block_type, &Ts::template clone_block<Passed...>}...};
 
         auto& f = detail::find_func(func_map, get_block_type(block), __func__);
-        return f(block);
+        return f(block, passed...);
     }
 
     static bool is_copyable(const base_element_block& block)
