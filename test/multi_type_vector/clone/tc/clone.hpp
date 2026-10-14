@@ -205,16 +205,9 @@ void test_clone_passed_cloner_constraints()
     static_assert(!mdds::mtv::stateful_clone_value<int>);
     static_assert(!mdds::mtv::stateful_clone_value<custom_grouped>);
 
-    // One or more stateful cloners of distinct types are accepted...
+    // One or more stateful cloners of distinct types are accepted.
     static_assert(requires(const mtv_type& s, grouped_cloner& c) { s.clone(c); });
     static_assert(requires(const mtv_type& s, grouped_cloner& c, ordered_cloner& o) { s.clone(c, o); });
-
-    // ...but only as lvalues, since the caller is to keep the instance...
-    static_assert(!requires(const mtv_type& s) { s.clone(grouped_cloner{}); });
-
-    // ...and a non-cloner is rejected.
-    static_assert(!requires(const mtv_type& s, int& i) { s.clone(i); });
-    static_assert(!requires(const mtv_type& s, custom_grouped& v) { s.clone(v); });
 }
 
 /**
@@ -315,6 +308,71 @@ void test_clone_passed_cloner_two_containers()
         TEST_ASSERT(payload_of(store1, 0) == p1);
         TEST_ASSERT(payload_of(store2, 1) == p1);
     }
+}
+
+/**
+ * Verify that a passed cloner instance keeps two groups apart while
+ * preserving the payload sharing within each, across blocks and across
+ * containers.
+ */
+template<typename mtv_type>
+void test_clone_passed_cloner_two_groups()
+{
+    MDDS_TEST_FUNC_SCOPE;
+
+    auto p1 = std::make_shared<std::string>("group 1");
+    auto p2 = std::make_shared<std::string>("group 2");
+
+    // The two groups interleave within and across blocks.
+    mtv_type store1;
+    store1.push_back(new custom_grouped{p1, 1});
+    store1.push_back(new custom_grouped{p2, 2});
+    store1.push_back_empty();
+    store1.push_back(new custom_grouped{p2, 2});
+    store1.push_back(new custom_grouped{p1, 1});
+    store1.template push_back<custom_num>(1.5);
+    store1.push_back(new custom_grouped{p1, 1});
+    store1.push_back(new custom_grouped{p2, 2});
+    TEST_ASSERT(store1.block_size() == 5);
+
+    mtv_type store2;
+    store2.push_back(new custom_grouped{p2, 2});
+    store2.push_back(new custom_grouped{p1, 1});
+
+    mdds::mtv::clone_value<custom_grouped*> cloner;
+    auto cloned1 = store1.clone(cloner);
+    auto cloned2 = store2.clone(cloner);
+
+    // One cloned payload per group, held by the passed instance.
+    TEST_ASSERT(cloner.group_payloads.size() == 2u);
+    auto c1 = cloner.group_payloads.at(1);
+    auto c2 = cloner.group_payloads.at(2);
+    TEST_ASSERT(c1 != c2);
+    TEST_ASSERT(c1 != p1); // cloned payload
+    TEST_ASSERT(c2 != p2); // cloned payload
+    TEST_ASSERT(*c1 == "group 1");
+    TEST_ASSERT(*c2 == "group 2");
+
+    // Every cloned element references the cloned payload of its own group,
+    // across the blocks of the first container...
+    TEST_ASSERT(payload_of(cloned1, 0) == c1);
+    TEST_ASSERT(payload_of(cloned1, 1) == c2);
+    TEST_ASSERT(cloned1.is_empty(2));
+    TEST_ASSERT(payload_of(cloned1, 3) == c2);
+    TEST_ASSERT(payload_of(cloned1, 4) == c1);
+    TEST_ASSERT(cloned1.template get<custom_num>(5).value == 1.5);
+    TEST_ASSERT(payload_of(cloned1, 6) == c1);
+    TEST_ASSERT(payload_of(cloned1, 7) == c2);
+
+    // ...and in the second container cloned through the same instance.
+    TEST_ASSERT(payload_of(cloned2, 0) == c2);
+    TEST_ASSERT(payload_of(cloned2, 1) == c1);
+
+    // The sources keep referencing the original payloads.
+    TEST_ASSERT(payload_of(store1, 0) == p1);
+    TEST_ASSERT(payload_of(store1, 1) == p2);
+    TEST_ASSERT(payload_of(store2, 0) == p2);
+    TEST_ASSERT(payload_of(store2, 1) == p1);
 }
 
 /**

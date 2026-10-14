@@ -623,7 +623,17 @@ void multi_type_vector<Traits>::detach()
 }
 
 template<typename Traits>
-void multi_type_vector<Traits>::detach_impl()
+template<stateful_clone_value... CVs>
+void multi_type_vector<Traits>::detach(CVs&... cloners)
+{
+    MDDS_MTV_TRACE(mutator);
+
+    detach_impl(cloners...);
+}
+
+template<typename Traits>
+template<stateful_clone_value... CVs>
+void multi_type_vector<Traits>::detach_impl(CVs&... cloners)
 {
     if constexpr (Traits::enable_cow)
     {
@@ -649,7 +659,7 @@ void multi_type_vector<Traits>::detach_impl()
         {
             for (size_type i = 0; i < owned.size(); ++i)
                 if (base_element_block* p = m_block_store.element_blocks[i])
-                    owned[i] = block_funcs::clone_block(*p);
+                    owned[i] = block_funcs::clone_block(*p, cloners...);
         }
         catch (...)
         {

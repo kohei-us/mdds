@@ -39,6 +39,8 @@ void run_all_tests()
     test_cow_last_sharer_reclaim_on_write<cow_mtv_type>();
     test_cow_clone_hdl();
     test_cow_clone_passed_cloner<cow_mtv_type, non_cow_mtv_type>();
+    test_cow_detach_passed_cloner<cow_mtv_type>();
+    test_cow_detach_passed_cloner_reclaim<cow_mtv_type, non_cow_mtv_type>();
 }
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

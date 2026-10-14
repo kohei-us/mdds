@@ -492,7 +492,8 @@ public:
      *
      * With copy-on-write enabled, this method only borrows the element
      * blocks of this instance, and the passed instances are left untouched
-     * since nothing is cloned until the returned instance detaches.
+     * since nothing is cloned until the returned instance detaches; pass
+     * them to detach(CVs&... cloners) to clone through them at that point.
      *
      * @param cloners Instances of mdds::mtv::clone_value specializations
      *                that declare no exec_policy, at most one per type.
@@ -1465,6 +1466,34 @@ public:
      */
     void detach();
 
+    /**
+     * Ensure that this container is the sole owner of its element blocks,
+     * cloning the values of some element blocks through the passed
+     * mdds::mtv::clone_value instances when the deferred duplication takes
+     * place.  This behaves like detach() except that an element block whose
+     * clone_value type is the type of one of the passed instances is cloned
+     * through that instance, as in clone(CVs&... cloners).  A caller who
+     * wants one such instance to carry its state across several containers
+     * that borrow blocks of a common source detaches each of them with the
+     * same instance.
+     *
+     * The passed instances are left untouched when nothing is cloned: when
+     * this container already owns its blocks, when it is the last sharer and
+     * reclaims the shared blocks instead of cloning them, and when
+     * copy-on-write is disabled.  Should cloning throw mid-way, the blocks
+     * cloned up to that point are freed and this container is left as if
+     * this method was not called, while the passed instances are left in
+     * whatever state they have reached; do not reuse them afterwards.
+     *
+     * @param cloners Instances of mdds::mtv::clone_value specializations
+     *                that declare no exec_policy, at most one per type.
+     *
+     * @exception mdds::mtv::element_block_error No specialization exists for at
+     *                least one affected value type.
+     */
+    template<stateful_clone_value... CVs>
+    void detach(CVs&... cloners);
+
     bool operator==(const multi_type_vector& other) const;
 
     multi_type_vector& operator=(const multi_type_vector& other);
@@ -1827,7 +1856,8 @@ private:
     /**
      * Non-tracing core of detach(), called from mutating methods.
      */
-    void detach_impl();
+    template<stateful_clone_value... CVs>
+    void detach_impl(CVs&... cloners);
 
     using adjust_block_positions_func = detail::adjust_block_positions<blocks_type, Traits::loop_unrolling>;
 
