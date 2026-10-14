@@ -49,7 +49,7 @@ struct id_event
 template<bool Cow>
 struct id_traits : mdds::mtv::default_traits
 {
-    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type>;
+    using block_funcs = mdds::mtv::element_block_funcs<num_block_type, str1_block_type, str2_block_type>;
     using event_func = id_event;
     static constexpr bool enable_cow = Cow;
 };

@@ -62,7 +62,8 @@ void test_cow_clone_passed_cloner()
         TEST_ASSERT(!same_block_pointers(src, cloned));
         TEST_ASSERT(cloner.group_payloads.size() == 1u);
         TEST_ASSERT(cloned.template get<custom_grouped*>(0)->payload != p1);
-        TEST_ASSERT(cloned.template get<custom_grouped*>(0)->payload == cloned.template get<custom_grouped*>(2)->payload);
+        TEST_ASSERT(
+            cloned.template get<custom_grouped*>(0)->payload == cloned.template get<custom_grouped*>(2)->payload);
         TEST_ASSERT(*cloned.template get<custom_grouped*>(0)->payload == "group 1");
 
         // Same with an event handler passed; the same instance continues, so
@@ -70,8 +71,10 @@ void test_cow_clone_passed_cloner()
         auto cloned2 = src.clone(cow_event{}, cloner);
         TEST_ASSERT(!cloned2.is_shared());
         TEST_ASSERT(cloner.group_payloads.size() == 1u);
-        TEST_ASSERT(cloned2.template get<custom_grouped*>(0)->payload == cloned.template get<custom_grouped*>(0)->payload);
-        TEST_ASSERT(cloned2.template get<custom_grouped*>(2)->payload == cloned.template get<custom_grouped*>(0)->payload);
+        TEST_ASSERT(
+            cloned2.template get<custom_grouped*>(0)->payload == cloned.template get<custom_grouped*>(0)->payload);
+        TEST_ASSERT(
+            cloned2.template get<custom_grouped*>(2)->payload == cloned.template get<custom_grouped*>(0)->payload);
     }
 }
 

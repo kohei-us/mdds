@@ -91,31 +91,31 @@ struct custom_grouped
     }
 };
 
-constexpr mdds::mtv::element_t block1_id = mdds::mtv::element_type_user_start;
-constexpr mdds::mtv::element_t block2_id = mdds::mtv::element_type_user_start + 1;
-constexpr mdds::mtv::element_t block3_id = mdds::mtv::element_type_user_start + 2;
-constexpr mdds::mtv::element_t block4_id = mdds::mtv::element_type_user_start + 3;
+constexpr mdds::mtv::element_t num_block_id = mdds::mtv::element_type_user_start;
+constexpr mdds::mtv::element_t str1_block_id = mdds::mtv::element_type_user_start + 1;
+constexpr mdds::mtv::element_t str2_block_id = mdds::mtv::element_type_user_start + 2;
+constexpr mdds::mtv::element_t grouped_block_id = mdds::mtv::element_type_user_start + 3;
 
-using block1_type = mdds::mtv::default_element_block<block1_id, custom_num, std::vector>;
-using block2_type = mdds::mtv::noncopyable_managed_element_block<block2_id, custom_str1, std::vector>;
-using block3_type = mdds::mtv::noncopyable_managed_element_block<block3_id, custom_str2, std::vector>;
-using block4_type = mdds::mtv::noncopyable_managed_element_block<block4_id, custom_grouped, std::vector>;
+using num_block_type = mdds::mtv::default_element_block<num_block_id, custom_num, std::vector>;
+using str1_block_type = mdds::mtv::noncopyable_managed_element_block<str1_block_id, custom_str1, std::vector>;
+using str2_block_type = mdds::mtv::noncopyable_managed_element_block<str2_block_id, custom_str2, std::vector>;
+using grouped_block_type = mdds::mtv::noncopyable_managed_element_block<grouped_block_id, custom_grouped, std::vector>;
 
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(custom_num, block1_id, custom_num{}, block1_type)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str1, block2_id, nullptr, block2_type)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str2, block3_id, nullptr, block3_type)
-MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_grouped, block4_id, nullptr, block4_type)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(custom_num, num_block_id, custom_num{}, num_block_type)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str1, str1_block_id, nullptr, str1_block_type)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str2, str2_block_id, nullptr, str2_block_type)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_grouped, grouped_block_id, nullptr, grouped_block_type)
 
 namespace mdds { namespace mtv {
 
 template<>
-struct clone_block<block2_type>
+struct clone_block<str1_block_type>
 {
-    block2_type* operator()(const block2_type& src) const
+    str1_block_type* operator()(const str1_block_type& src) const
     {
         // Build incrementally into the destination block so that partially
         // cloned elements get freed if a clone throws mid-way.
-        std::unique_ptr<block2_type> cloned_blk = std::make_unique<block2_type>();
+        std::unique_ptr<str1_block_type> cloned_blk = std::make_unique<str1_block_type>();
         auto& cloned = cloned_blk->store();
         cloned.reserve(src.store().size());
         for (const custom_str1* p : src.store())
@@ -190,14 +190,16 @@ struct cow_event
 
 struct cow_traits : mdds::mtv::default_traits
 {
-    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type, block4_type>;
+    using block_funcs =
+        mdds::mtv::element_block_funcs<num_block_type, str1_block_type, str2_block_type, grouped_block_type>;
     using event_func = cow_event;
     static constexpr bool enable_cow = true;
 };
 
 struct non_cow_traits : mdds::mtv::default_traits
 {
-    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type, block4_type>;
+    using block_funcs =
+        mdds::mtv::element_block_funcs<num_block_type, str1_block_type, str2_block_type, grouped_block_type>;
     using event_func = cow_event;
     static constexpr bool enable_cow = false;
 };
