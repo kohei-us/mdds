@@ -64,11 +64,18 @@ struct noncopyable_traits : mdds::mtv::default_traits
 
 namespace mdds { namespace mtv {
 
+/**
+ * Stateful cloner without an exec_policy, which counts the elements it has
+ * cloned.
+ */
 template<>
 struct clone_value<custom_str*>
 {
-    custom_str* operator()(const custom_str* src) const
+    int visits = 0;
+
+    custom_str* operator()(const custom_str* src)
     {
+        ++visits;
         return new custom_str{src->value};
     }
 };

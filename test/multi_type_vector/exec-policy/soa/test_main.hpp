@@ -14,5 +14,6 @@ void test_copy_construction_and_equal();
 void test_shrink_to_fit();
 void test_clone();
 void test_clone_noncopyable();
+void test_clone_passed_cloner();
 
 /* vim:set shiftwidth=4 softtabstop=4 expandtab: */

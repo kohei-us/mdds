@@ -107,7 +107,10 @@ private:
                                                     std::is_nothrow_swappable_v<std::vector<base_element_block*>>;
 
         blocks_type() noexcept(nothrow_default_constructible_v);
-        blocks_type(mtv::detail::clone_construction_type, const blocks_type& other);
+
+        template<stateful_clone_value... CVs>
+        blocks_type(mtv::detail::clone_construction_type, const blocks_type& other, CVs&... cloners);
+
         blocks_type(const blocks_type& other);
         blocks_type(blocks_type&& other) noexcept(nothrow_move_constructible_v);
 
@@ -245,9 +248,12 @@ private:
 
     static constexpr bool nothrow_move_assignable_v = nothrow_move_constructible_v && nothrow_swappable_v;
 
-    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other);
+    template<stateful_clone_value... CVs>
+    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other, CVs&... cloners);
 
-    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other, event_func hdl);
+    template<stateful_clone_value... CVs>
+    multi_type_vector(
+        mtv::detail::clone_construction_type, const multi_type_vector& other, event_func hdl, CVs&... cloners);
 
 public:
     using iterator = detail::iterator_base<iterator_trait>;
@@ -467,6 +473,58 @@ public:
      *                least one affected value type.
      */
     multi_type_vector clone(event_func hdl) const;
+
+    /**
+     * Clone the entire content of container, cloning the values of some
+     * element blocks through the passed mdds::mtv::clone_value instances.
+     * An element block whose clone_value type is the type of one of the
+     * passed instances is cloned through that instance, which therefore
+     * carries its state across all such blocks of this call, and across any
+     * further calls it is passed to.  Every other block is cloned as in
+     * clone().
+     *
+     * The element blocks are cloned sequentially in their stored order
+     * regardless of the exec_policy of the traits, since a passed instance
+     * must not be invoked from several threads.  Should cloning throw
+     * mid-way, the blocks cloned up to that point are freed before the
+     * exception propagates, while the passed instances are left in whatever
+     * state they have reached; do not reuse them afterwards.
+     *
+     * With copy-on-write enabled, this method only borrows the element
+     * blocks of this instance, and the passed instances are left untouched
+     * since nothing is cloned until the returned instance detaches.
+     *
+     * @param cloners Instances of mdds::mtv::clone_value specializations
+     *                that declare no exec_policy, at most one per type.
+     *
+     * @return Brand-new instance containing the same content as the original
+     *         instance.
+     *
+     * @exception mdds::mtv::element_block_error No specialization exists for at
+     *                least one affected value type.
+     */
+    template<stateful_clone_value... CVs>
+    multi_type_vector clone(CVs&... cloners) const;
+
+    /**
+     * Clone the entire content of container through the passed
+     * mdds::mtv::clone_value instances, assigning a different event handler
+     * in the cloned instance.  This behaves like clone(CVs&... cloners)
+     * except that the returned instance uses the supplied event handler
+     * rather than a copy of this instance's handler.
+     *
+     * @param hdl Event handler to install in the cloned instance.
+     * @param cloners Instances of mdds::mtv::clone_value specializations
+     *                that declare no exec_policy, at most one per type.
+     *
+     * @return Brand-new instance containing the same content as the original
+     *         instance, using the supplied event handler.
+     *
+     * @exception mdds::mtv::element_block_error No specialization exists for at
+     *                least one affected value type.
+     */
+    template<stateful_clone_value... CVs>
+    multi_type_vector clone(event_func hdl, CVs&... cloners) const;
 
     /**
      * Given the logical position of an element, get the iterator of the block

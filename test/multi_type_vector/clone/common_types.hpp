@@ -260,6 +260,7 @@ struct clone_value<custom_grouped*>
         // This inserts a payload only on the first element of each group
         auto [it, inserted] = group_payloads.try_emplace(src->group);
         if (inserted)
+            // create a new instance for the cloned block
             it->second = std::make_shared<std::string>(*src->payload);
 
         return new custom_grouped{it->second, src->group};

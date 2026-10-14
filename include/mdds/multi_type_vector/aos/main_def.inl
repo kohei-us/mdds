@@ -274,7 +274,9 @@ multi_type_vector<Traits>::multi_type_vector(size_type init_size, const T& it_be
 }
 
 template<typename Traits>
-multi_type_vector<Traits>::multi_type_vector(mdds::mtv::detail::clone_construction_type, const multi_type_vector& other)
+template<stateful_clone_value... CVs>
+multi_type_vector<Traits>::multi_type_vector(
+    mdds::mtv::detail::clone_construction_type, const multi_type_vector& other, CVs&... cloners)
     : m_hdl_event(other.m_hdl_event), m_blocks(other.m_blocks), m_cur_size(other.m_cur_size)
 {
     // Clone all element blocks into a temporary store, committing them only
@@ -286,7 +288,7 @@ multi_type_vector<Traits>::multi_type_vector(mdds::mtv::detail::clone_constructi
     {
         for (std::size_t i = 0; i < m_blocks.size(); ++i)
             if (m_blocks[i].data)
-                owned[i] = block_funcs::clone_block(*m_blocks[i].data);
+                owned[i] = block_funcs::clone_block(*m_blocks[i].data, cloners...);
     }
     catch (...)
     {
@@ -349,6 +351,13 @@ template<typename Traits>
 auto multi_type_vector<Traits>::clone() const -> multi_type_vector
 {
     return multi_type_vector(mtv::detail::clone_construction_type{}, *this);
+}
+
+template<typename Traits>
+template<stateful_clone_value... CVs>
+auto multi_type_vector<Traits>::clone(CVs&... cloners) const -> multi_type_vector
+{
+    return multi_type_vector(mtv::detail::clone_construction_type{}, *this, cloners...);
 }
 
 template<typename Traits>

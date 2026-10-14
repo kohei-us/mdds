@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -73,17 +75,36 @@ struct custom_str2
     }
 };
 
+/**
+ * Stored in managed non-copyable block; elements of the same group share one
+ * payload, and its stateful clone_value preserves that sharing when cloning
+ * a block.
+ */
+struct custom_grouped
+{
+    std::shared_ptr<std::string> payload;
+    int group;
+
+    bool operator==(const custom_grouped& other) const
+    {
+        return group == other.group && *payload == *other.payload;
+    }
+};
+
 constexpr mdds::mtv::element_t block1_id = mdds::mtv::element_type_user_start;
 constexpr mdds::mtv::element_t block2_id = mdds::mtv::element_type_user_start + 1;
 constexpr mdds::mtv::element_t block3_id = mdds::mtv::element_type_user_start + 2;
+constexpr mdds::mtv::element_t block4_id = mdds::mtv::element_type_user_start + 3;
 
 using block1_type = mdds::mtv::default_element_block<block1_id, custom_num, std::vector>;
 using block2_type = mdds::mtv::noncopyable_managed_element_block<block2_id, custom_str1, std::vector>;
 using block3_type = mdds::mtv::noncopyable_managed_element_block<block3_id, custom_str2, std::vector>;
+using block4_type = mdds::mtv::noncopyable_managed_element_block<block4_id, custom_grouped, std::vector>;
 
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS(custom_num, block1_id, custom_num{}, block1_type)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str1, block2_id, nullptr, block2_type)
 MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_str2, block3_id, nullptr, block3_type)
+MDDS_MTV_DEFINE_ELEMENT_CALLBACKS_PTR(custom_grouped, block4_id, nullptr, block4_type)
 
 namespace mdds { namespace mtv {
 
@@ -110,6 +131,26 @@ struct clone_value<custom_str2*>
     custom_str2* operator()(const custom_str2* src) const
     {
         return new custom_str2(*src);
+    }
+};
+
+/**
+ * Stateful cloner which clones the shared payload only once per group, so
+ * that the cloned elements of one group share one new payload.
+ */
+template<>
+struct clone_value<custom_grouped*>
+{
+    std::map<int, std::shared_ptr<std::string>> group_payloads;
+
+    custom_grouped* operator()(const custom_grouped* src)
+    {
+        // This inserts a payload only on the first element of each group
+        auto [it, inserted] = group_payloads.try_emplace(src->group);
+        if (inserted)
+            it->second = std::make_shared<std::string>(*src->payload);
+
+        return new custom_grouped{it->second, src->group};
     }
 };
 
@@ -149,14 +190,14 @@ struct cow_event
 
 struct cow_traits : mdds::mtv::default_traits
 {
-    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type>;
+    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type, block4_type>;
     using event_func = cow_event;
     static constexpr bool enable_cow = true;
 };
 
 struct non_cow_traits : mdds::mtv::default_traits
 {
-    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type>;
+    using block_funcs = mdds::mtv::element_block_funcs<block1_type, block2_type, block3_type, block4_type>;
     using event_func = cow_event;
     static constexpr bool enable_cow = false;
 };

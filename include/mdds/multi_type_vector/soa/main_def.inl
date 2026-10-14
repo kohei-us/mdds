@@ -139,7 +139,9 @@ multi_type_vector<Traits>::blocks_type::blocks_type() noexcept(nothrow_default_c
 {}
 
 template<typename Traits>
-multi_type_vector<Traits>::blocks_type::blocks_type(mtv::detail::clone_construction_type, const blocks_type& other)
+template<stateful_clone_value... CVs>
+multi_type_vector<Traits>::blocks_type::blocks_type(
+    mtv::detail::clone_construction_type, const blocks_type& other, CVs&... cloners)
     : positions(other.positions), sizes(other.sizes), element_blocks(other.element_blocks)
 {
     if constexpr (Traits::enable_cow)
@@ -147,11 +149,37 @@ multi_type_vector<Traits>::blocks_type::blocks_type(mtv::detail::clone_construct
         // COW enabled - the shallow element_blocks copy above is the borrow;
         // deep clone is deffered to detach()
     }
-    else
+    else if constexpr (sizeof...(CVs) == 0)
     {
         // COW disabled - deep-clone element_blocks
         detail::copy_blocks<typename Traits::exec_policy, block_funcs::clone_block, block_funcs::delete_block>{}(
             element_blocks);
+    }
+    else
+    {
+        // COW disabled with passed cloners - deep-clone element_blocks
+        // sequentially in stored order, since the passed cloners must not be
+        // invoked from several threads.  Clone into a separate store and
+        // commit it only once every clone succeeds, so that a clone throwing
+        // mid-way doesn't leak the blocks cloned so far.
+        std::vector<base_element_block*> owned(element_blocks.size(), nullptr);
+
+        try
+        {
+            for (std::size_t i = 0; i < owned.size(); ++i)
+                if (const base_element_block* p = element_blocks[i])
+                    owned[i] = block_funcs::clone_block(*p, cloners...);
+        }
+        catch (...)
+        {
+            // Delete blocks cloned so far to prevent leak
+            for (const base_element_block* p : owned)
+                if (p)
+                    block_funcs::delete_block(p);
+            throw;
+        }
+
+        element_blocks.swap(owned);
     }
 }
 
@@ -459,14 +487,18 @@ multi_type_vector<Traits>::multi_type_vector(size_type init_size, const T& it_be
 }
 
 template<typename Traits>
-multi_type_vector<Traits>::multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other)
-    : multi_type_vector(mtv::detail::clone_construction_type{}, other, other.m_hdl_event)
+template<stateful_clone_value... CVs>
+multi_type_vector<Traits>::multi_type_vector(
+    mtv::detail::clone_construction_type, const multi_type_vector& other, CVs&... cloners)
+    : multi_type_vector(mtv::detail::clone_construction_type{}, other, other.m_hdl_event, cloners...)
 {}
 
 template<typename Traits>
+template<stateful_clone_value... CVs>
 multi_type_vector<Traits>::multi_type_vector(
-    mtv::detail::clone_construction_type, const multi_type_vector& other, event_func hdl)
-    : m_hdl_event(std::move(hdl)), m_block_store(mtv::detail::clone_construction_type{}, other.m_block_store),
+    mtv::detail::clone_construction_type, const multi_type_vector& other, event_func hdl, CVs&... cloners)
+    : m_hdl_event(std::move(hdl)),
+      m_block_store(mtv::detail::clone_construction_type{}, other.m_block_store, cloners...),
       m_cur_size(other.m_cur_size)
 {
     if constexpr (Traits::enable_cow)
@@ -662,6 +694,24 @@ auto multi_type_vector<Traits>::clone(event_func hdl) const -> multi_type_vector
     MDDS_MTV_TRACE(accessor);
 
     return multi_type_vector(mtv::detail::clone_construction_type{}, *this, std::move(hdl));
+}
+
+template<typename Traits>
+template<stateful_clone_value... CVs>
+auto multi_type_vector<Traits>::clone(CVs&... cloners) const -> multi_type_vector
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return multi_type_vector(mtv::detail::clone_construction_type{}, *this, cloners...);
+}
+
+template<typename Traits>
+template<stateful_clone_value... CVs>
+auto multi_type_vector<Traits>::clone(event_func hdl, CVs&... cloners) const -> multi_type_vector
+{
+    MDDS_MTV_TRACE(accessor);
+
+    return multi_type_vector(mtv::detail::clone_construction_type{}, *this, std::move(hdl), cloners...);
 }
 
 template<typename Traits>

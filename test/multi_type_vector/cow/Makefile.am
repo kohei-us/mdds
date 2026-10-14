@@ -28,6 +28,7 @@ EXTRA_DIST = \
 	tc/mutable_access.hpp \
 	tc/reclaim.hpp \
 	tc/clone_hdl.hpp \
+	tc/passed_cloner.hpp \
 	tc/run.hpp
 
 TESTS = test-soa

@@ -15,6 +15,12 @@ void run_all_tests()
     test_clone_stateful<mtv_type>();
     test_clone_group_payload<mtv_type>();
     test_clone_throw_mid_block<mtv_type>();
+    test_clone_passed_cloner_constraints<mtv_type>();
+    test_clone_passed_cloner_split_group<mtv_type>();
+    test_clone_passed_cloner_two_containers<mtv_type>();
+    test_clone_passed_cloner_ordered<mtv_type>();
+    test_clone_passed_cloner_other_type<mtv_type>();
+    test_clone_passed_cloner_throw_mid_block<mtv_type>();
     test_noclone<mtv_type>(); // now runs for both variants (previously aos-only)
 }
 

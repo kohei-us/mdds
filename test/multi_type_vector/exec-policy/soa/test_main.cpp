@@ -51,6 +51,7 @@ int main()
     test_shrink_to_fit();
     test_clone();
     test_clone_noncopyable();
+    test_clone_passed_cloner();
 
     return EXIT_SUCCESS;
 }

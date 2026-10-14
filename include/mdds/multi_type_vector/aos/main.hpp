@@ -156,7 +156,8 @@ private:
 
     static constexpr bool nothrow_move_assignable_v = nothrow_move_constructible_v && nothrow_swappable_v;
 
-    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other);
+    template<stateful_clone_value... CVs>
+    multi_type_vector(mtv::detail::clone_construction_type, const multi_type_vector& other, CVs&... cloners);
 
 public:
     typedef detail::iterator_base<iterator_trait, itr_forward_update> iterator;
@@ -379,6 +380,34 @@ public:
      *                least one affected value type.
      */
     multi_type_vector clone() const;
+
+    /**
+     * Clone the entire content of container, cloning the values of some
+     * element blocks through the passed mdds::mtv::clone_value instances.
+     * An element block whose clone_value type is the type of one of the
+     * passed instances is cloned through that instance, which therefore
+     * carries its state across all such blocks of this call, and across any
+     * further calls it is passed to.  Every other block is cloned as in
+     * clone().
+     *
+     * The element blocks are cloned sequentially in their stored order,
+     * since a passed instance must not be invoked from several threads.
+     * Should cloning throw mid-way, the blocks cloned up to that point are
+     * freed before the exception propagates, while the passed instances are
+     * left in whatever state they have reached; do not reuse them
+     * afterwards.
+     *
+     * @param cloners Instances of mdds::mtv::clone_value specializations
+     *                that declare no exec_policy, at most one per type.
+     *
+     * @return Brand-new instance containing the same content as the original
+     *         instance.
+     *
+     * @exception mdds::mtv::element_block_error No specialization exists for at
+     *                least one affected value type.
+     */
+    template<stateful_clone_value... CVs>
+    multi_type_vector clone(CVs&... cloners) const;
 
     /**
      * Set a value of an arbitrary type to a specified position.  The type of
