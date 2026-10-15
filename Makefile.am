@@ -21,6 +21,7 @@ EXTRA_DIST = \
 	autogen.sh \
 	CHANGELOG \
 	LICENSE \
+	doc/_static/custom.css \
 	doc/_static/images/fst-example1-initial.svg \
 	doc/_static/images/fst-example1-initial.svg.license \
 	doc/_static/images/fst-example1-insert1.svg \
