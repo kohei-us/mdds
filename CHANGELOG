@@ -37,6 +37,17 @@ mdds 4.0.0 (next target)
     so its operator() no longer needs to be const.  A new code example
     on stateful cloning has been added to the documentation.
 
+  * added clone() overloads to both variants, and a detach() overload
+    to the soa variant, that take caller-supplied clone_value
+    instances.  A block whose clone_value type matches a passed
+    instance is cloned through that instance for the whole call, which
+    lets a stateful cloner carry its state across the blocks of one
+    container and across containers, for instance to preserve state
+    shared by elements stored in several blocks.  Only specializations
+    without an exec_policy are accepted, and with an instance passed
+    the blocks are cloned sequentially in their stored order.  The
+    stateful cloning code example has been extended to cover this.
+
   * fixed memory leaks in clone() and copy construction: if cloning or
     copying of an element block threw part-way, the elements cloned so
     far within that block as well as any fully cloned preceding blocks
