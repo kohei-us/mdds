@@ -18,9 +18,9 @@
 using string_pool = std::vector<std::string>;
 
 /**
- * References a string in a shared pool by its index.  All elements in a block
- * share one pool, so it should be cloned once per block, not once per element.
- * Copying is disabled to force duplication through the clone machinery.
+ * References a string in a shared pool by its index.  Elements that share a
+ * pool should get one clone of it, not one clone per element.  Copying is
+ * disabled to force duplication through the clone machinery.
  */
 class pooled_string
 {
@@ -82,8 +82,8 @@ struct clone_value<pooled_string*>
     {
         if (!cloned_pool)
         {
-            // One cloner instance clones the elements of one block, so this
-            // runs once per block; all cloned elements share the new pool.
+            // Runs once per cloner instance; all the elements the instance
+            // clones share the new pool.
             cloned_pool = std::make_shared<string_pool>(*src->pool());
             std::cout << "cloning a pool of " << cloned_pool->size() << " strings" << std::endl;
         }
@@ -123,6 +123,48 @@ int main() try
                   << (orig->pool() == copy->pool() ? "shared" : "separate") << ")" << std::endl;
     }
     //!code-end: inspect-store
+
+    //!code-start: populate-split
+    // One pool shared by the elements of two blocks.
+    mtv_type split;
+    split.push_back(new pooled_string(pool, 0));
+    split.push_back(new pooled_string(pool, 1));
+    split.push_back_empty();
+    split.push_back(new pooled_string(pool, 2));
+    split.push_back(new pooled_string(pool, 3));
+    //!code-end: populate-split
+
+    //!code-start: clone-split
+    std::cout << "cloning the container with two blocks..." << std::endl;
+    auto split_cloned = split.clone();
+    std::cout << "done cloning" << std::endl;
+    bool shared = split_cloned.get<pooled_string*>(0)->pool() == split_cloned.get<pooled_string*>(3)->pool();
+    std::cout << "pool is " << (shared ? "shared" : "separate") << " between the two blocks" << std::endl;
+    //!code-end: clone-split
+
+    //!code-start: clone-split-passed
+    std::cout << "cloning the container with two blocks through one cloner..." << std::endl;
+    mdds::mtv::clone_value<pooled_string*> cloner;
+    auto split_cloned2 = split.clone(cloner);
+    std::cout << "done cloning" << std::endl;
+    shared = split_cloned2.get<pooled_string*>(0)->pool() == split_cloned2.get<pooled_string*>(3)->pool();
+    std::cout << "pool is " << (shared ? "shared" : "separate") << " between the two blocks" << std::endl;
+    //!code-end: clone-split-passed
+
+    //!code-start: clone-two-containers
+    // A second container referencing the same pool.
+    mtv_type other;
+    other.push_back(new pooled_string(pool, 3));
+    other.push_back(new pooled_string(pool, 0));
+
+    std::cout << "cloning two containers through one cloner..." << std::endl;
+    mdds::mtv::clone_value<pooled_string*> cloner2;
+    auto cloned_a = split.clone(cloner2);
+    auto cloned_b = other.clone(cloner2);
+    std::cout << "done cloning" << std::endl;
+    shared = cloned_a.get<pooled_string*>(0)->pool() == cloned_b.get<pooled_string*>(0)->pool();
+    std::cout << "pool is " << (shared ? "shared" : "separate") << " between the two clones" << std::endl;
+    //!code-end: clone-two-containers
 
     return EXIT_SUCCESS;
 }

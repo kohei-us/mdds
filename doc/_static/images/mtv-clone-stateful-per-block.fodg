@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<office:document xmlns:office="urn:oasis:names:tc:opendocument:xmlns:office:1.0" xmlns:style="urn:oasis:names:tc:opendocument:xmlns:style:1.0" xmlns:text="urn:oasis:names:tc:opendocument:xmlns:text:1.0" xmlns:draw="urn:oasis:names:tc:opendocument:xmlns:drawing:1.0" xmlns:fo="urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svg="urn:oasis:names:tc:opendocument:xmlns:svg-compatible:1.0" xmlns:loext="urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" office:version="1.3" office:mimetype="application/vnd.oasis.opendocument.graphics">
+ <office:font-face-decls>
+  <style:font-face style:name="Liberation Sans" svg:font-family="&apos;Liberation Sans&apos;" style:font-family-generic="swiss" style:font-pitch="variable"/>
+  <style:font-face style:name="Liberation Mono" svg:font-family="&apos;Liberation Mono&apos;" style:font-family-generic="modern" style:font-pitch="fixed"/>
+ </office:font-face-decls>
+ <office:styles>
+  <draw:marker draw:name="Arrow" svg:viewBox="0 0 20 30" svg:d="M10 0l-10 30h20z"/>
+  <draw:stroke-dash draw:name="Dash" draw:style="rect" draw:dots1="1" draw:dots1-length="0.1cm" draw:distance="0.08cm"/>
+  <style:default-style style:family="graphic">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.026cm" svg:stroke-color="#7a8794" draw:fill="solid" draw:fill-color="#ffffff" fo:padding-top="0.05cm" fo:padding-bottom="0.05cm" fo:padding-left="0.08cm" fo:padding-right="0.08cm" fo:wrap-option="wrap" draw:shadow="hidden"/>
+   <style:paragraph-properties fo:text-align="center"/>
+   <style:text-properties fo:color="#333333" style:font-name="Liberation Sans" fo:font-family="&apos;Liberation Sans&apos;" fo:font-size="8pt"/>
+  </style:default-style>
+  <style:style style:name="standard" style:family="graphic"/>
+ </office:styles>
+ <office:automatic-styles>
+  <style:page-layout style:name="PM0">
+   <style:page-layout-properties fo:margin-top="0cm" fo:margin-bottom="0cm" fo:margin-left="0cm" fo:margin-right="0cm" fo:page-width="17.000cm" fo:page-height="4.200cm" style:print-orientation="landscape"/>
+  </style:page-layout>
+  <style:style style:name="dp1" style:family="drawing-page">
+   <style:drawing-page-properties draw:background-size="border" draw:fill="none"/>
+  </style:style>
+  <style:style style:name="gr_container" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.026cm" svg:stroke-color="#7a8794" draw:fill="none" draw:textarea-vertical-align="top"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_block" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.026cm" svg:stroke-color="#7a8794" draw:fill="solid" draw:fill-color="#dfe7ef" draw:textarea-vertical-align="middle"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_empty" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.026cm" svg:stroke-color="#b8c0c8" draw:fill="solid" draw:fill-color="#ffffff" draw:textarea-vertical-align="middle"/>
+   <style:paragraph-properties />
+   <style:text-properties fo:color="#7a8794"/>
+  </style:style>
+  <style:style style:name="gr_pool" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.04cm" svg:stroke-color="#2f6fb0" draw:fill="solid" draw:fill-color="#cfe3f7" draw:textarea-vertical-align="middle"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_cloner" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.04cm" svg:stroke-color="#c9782d" draw:fill="solid" draw:fill-color="#fbe9c9" draw:textarea-vertical-align="middle"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_label" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-vertical-align="top"/>
+   <style:paragraph-properties fo:text-align="start"/>
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_clabel" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-vertical-align="top"/>
+   <style:paragraph-properties fo:text-align="center"/>
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_title" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-vertical-align="top"/>
+   <style:paragraph-properties fo:text-align="start"/>
+   <style:text-properties fo:font-weight="bold"/>
+  </style:style>
+  <style:style style:name="gr_ctitle" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-vertical-align="top"/>
+   <style:paragraph-properties fo:text-align="center"/>
+   <style:text-properties fo:font-weight="bold"/>
+  </style:style>
+  <style:style style:name="gr_mono" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="none" draw:fill="none" draw:textarea-vertical-align="top"/>
+   <style:paragraph-properties fo:text-align="start"/>
+   <style:text-properties style:font-name="Liberation Mono" fo:font-family="&apos;Liberation Mono&apos;" fo:font-size="7.5pt"/>
+  </style:style>
+  <style:style style:name="gr_ref" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.026cm" svg:stroke-color="#2f6fb0" draw:marker-end="Arrow" draw:marker-end-width="0.2cm"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_refdash" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="dash" draw:stroke-dash="Dash" svg:stroke-width="0.026cm" svg:stroke-color="#2f6fb0" draw:marker-end="Arrow" draw:marker-end-width="0.2cm"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_use" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.032cm" svg:stroke-color="#c9782d" draw:marker-end="Arrow" draw:marker-end-width="0.2cm"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_flow" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.04cm" svg:stroke-color="#7a8794" draw:marker-end="Arrow" draw:marker-end-width="0.25cm"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_sep" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="dash" draw:stroke-dash="Dash" svg:stroke-width="0.026cm" svg:stroke-color="#b8c0c8"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+  <style:style style:name="gr_plain" style:family="graphic" style:parent-style-name="standard">
+   <style:graphic-properties draw:stroke="solid" svg:stroke-width="0.026cm" svg:stroke-color="#7a8794"/>
+   <style:paragraph-properties />
+   <style:text-properties />
+  </style:style>
+ </office:automatic-styles>
+ <office:master-styles>
+  <style:master-page style:name="Default" style:page-layout-name="PM0" draw:style-name="dp1"/>
+ </office:master-styles>
+ <office:body>
+  <office:drawing>
+   <draw:page draw:name="page1" draw:style-name="dp1" draw:master-page-name="Default">
+    <draw:custom-shape draw:name="shape1" draw:style-name="gr_pool" draw:layer="layout" svg:width="1.400cm" svg:height="0.500cm" svg:x="0.400cm" svg:y="1.500cm"><text:p>pool</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:frame draw:name="text2" draw:style-name="gr_ctitle" draw:layer="layout" svg:width="3.200cm" svg:height="0.400cm" svg:x="2.300cm" svg:y="0.600cm"><draw:text-box><text:p>source</text:p></draw:text-box></draw:frame>
+    <draw:custom-shape draw:name="shape3" draw:style-name="gr_block" draw:layer="layout" svg:width="2.600cm" svg:height="0.500cm" svg:x="2.600cm" svg:y="1.000cm"><text:p>B1 pooled_string</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:custom-shape draw:name="shape4" draw:style-name="gr_empty" draw:layer="layout" svg:width="2.600cm" svg:height="0.500cm" svg:x="2.600cm" svg:y="1.500cm"><text:p>B2 empty</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:custom-shape draw:name="shape5" draw:style-name="gr_block" draw:layer="layout" svg:width="2.600cm" svg:height="0.500cm" svg:x="2.600cm" svg:y="2.000cm"><text:p>B3 pooled_string</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:line draw:name="line6" draw:style-name="gr_ref" draw:layer="layout" svg:x1="2.600cm" svg:y1="1.250cm" svg:x2="1.800cm" svg:y2="1.600cm"><text:p/></draw:line>
+    <draw:line draw:name="line7" draw:style-name="gr_ref" draw:layer="layout" svg:x1="2.600cm" svg:y1="2.250cm" svg:x2="1.800cm" svg:y2="1.900cm"><text:p/></draw:line>
+    <draw:frame draw:name="text8" draw:style-name="gr_ctitle" draw:layer="layout" svg:width="3.600cm" svg:height="0.450cm" svg:x="6.000cm" svg:y="0.550cm"><draw:text-box><text:p>clone()</text:p></draw:text-box></draw:frame>
+    <draw:custom-shape draw:name="shape9" draw:style-name="gr_cloner" draw:layer="layout" svg:width="3.600cm" svg:height="0.500cm" svg:x="6.000cm" svg:y="1.000cm"><text:p>clone_value instance #1</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:custom-shape draw:name="shape10" draw:style-name="gr_cloner" draw:layer="layout" svg:width="3.600cm" svg:height="0.500cm" svg:x="6.000cm" svg:y="2.000cm"><text:p>clone_value instance #2</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:frame draw:name="text11" draw:style-name="gr_clabel" draw:layer="layout" svg:width="4.000cm" svg:height="1.000cm" svg:x="5.800cm" svg:y="2.700cm"><draw:text-box><text:p>one new instance per block;</text:p><text:p>each clones the pool for itself</text:p></draw:text-box></draw:frame>
+    <draw:line draw:name="line12" draw:style-name="gr_use" draw:layer="layout" svg:x1="5.200cm" svg:y1="1.250cm" svg:x2="6.000cm" svg:y2="1.250cm"><text:p/></draw:line>
+    <draw:line draw:name="line13" draw:style-name="gr_use" draw:layer="layout" svg:x1="5.200cm" svg:y1="2.250cm" svg:x2="6.000cm" svg:y2="2.250cm"><text:p/></draw:line>
+    <draw:frame draw:name="text14" draw:style-name="gr_ctitle" draw:layer="layout" svg:width="3.200cm" svg:height="0.400cm" svg:x="10.300cm" svg:y="0.600cm"><draw:text-box><text:p>clone</text:p></draw:text-box></draw:frame>
+    <draw:custom-shape draw:name="shape15" draw:style-name="gr_block" draw:layer="layout" svg:width="2.600cm" svg:height="0.500cm" svg:x="10.600cm" svg:y="1.000cm"><text:p>B1' pooled_string</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:custom-shape draw:name="shape16" draw:style-name="gr_empty" draw:layer="layout" svg:width="2.600cm" svg:height="0.500cm" svg:x="10.600cm" svg:y="1.500cm"><text:p>B2' empty</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:custom-shape draw:name="shape17" draw:style-name="gr_block" draw:layer="layout" svg:width="2.600cm" svg:height="0.500cm" svg:x="10.600cm" svg:y="2.000cm"><text:p>B3' pooled_string</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:line draw:name="line18" draw:style-name="gr_use" draw:layer="layout" svg:x1="9.600cm" svg:y1="1.250cm" svg:x2="10.600cm" svg:y2="1.250cm"><text:p/></draw:line>
+    <draw:line draw:name="line19" draw:style-name="gr_use" draw:layer="layout" svg:x1="9.600cm" svg:y1="2.250cm" svg:x2="10.600cm" svg:y2="2.250cm"><text:p/></draw:line>
+    <draw:custom-shape draw:name="shape20" draw:style-name="gr_pool" draw:layer="layout" svg:width="2.400cm" svg:height="0.500cm" svg:x="14.200cm" svg:y="1.000cm"><text:p>pool copy 1</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:custom-shape draw:name="shape21" draw:style-name="gr_pool" draw:layer="layout" svg:width="2.400cm" svg:height="0.500cm" svg:x="14.200cm" svg:y="2.000cm"><text:p>pool copy 2</text:p><draw:enhanced-geometry svg:viewBox="0 0 21600 21600" draw:type="rectangle" draw:enhanced-path="M 0 0 L 21600 0 21600 21600 0 21600 0 0 Z N"/></draw:custom-shape>
+    <draw:line draw:name="line22" draw:style-name="gr_ref" draw:layer="layout" svg:x1="13.200cm" svg:y1="1.250cm" svg:x2="14.200cm" svg:y2="1.250cm"><text:p/></draw:line>
+    <draw:line draw:name="line23" draw:style-name="gr_ref" draw:layer="layout" svg:x1="13.200cm" svg:y1="2.250cm" svg:x2="14.200cm" svg:y2="2.250cm"><text:p/></draw:line>
+    <draw:frame draw:name="text24" draw:style-name="gr_clabel" draw:layer="layout" svg:width="3.400cm" svg:height="1.000cm" svg:x="13.600cm" svg:y="2.700cm"><draw:text-box><text:p>the clone ends up with</text:p><text:p>two copies of the pool</text:p></draw:text-box></draw:frame>
+   </draw:page>
+  </office:drawing>
+ </office:body>
+</office:document>

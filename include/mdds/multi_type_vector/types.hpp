@@ -246,7 +246,10 @@ protected:
  * object and applies it to the elements strictly in the same order as they
  * are stored in the source. The operator() may therefore be non-const,
  * to let the function object carry state across the elements of a block
- * during cloning.
+ * during cloning.  The block is the default scope of that state; to widen
+ * it to several blocks or several containers, the caller passes its own
+ * instance to the clone() and detach() overloads that take clone_value
+ * instances.
  *
  * If a specialization declares an optional @p exec_policy type, the values
  * are cloned via std::transform with that execution policy instead; the order

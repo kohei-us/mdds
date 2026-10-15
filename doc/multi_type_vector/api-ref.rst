@@ -116,6 +116,10 @@ mdds::mtv::clone_value
 ^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenstruct:: mdds::mtv::clone_value
 
+mdds::mtv::stateful_clone_value
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. doxygenconcept:: mdds::mtv::stateful_clone_value
+
 mdds::mtv::clone_block
 ^^^^^^^^^^^^^^^^^^^^^^
 .. doxygenstruct:: mdds::mtv::clone_block

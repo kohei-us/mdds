@@ -29,6 +29,18 @@ EXTRA_DIST = \
 	doc/_static/images/fst-example1-insert2.svg.license \
 	doc/_static/images/mtv-block-structure.svg \
 	doc/_static/images/mtv-block-structure.svg.license \
+	doc/_static/images/mtv-clone-passed-cloner-blocks.fodg \
+	doc/_static/images/mtv-clone-passed-cloner-blocks.fodg.license \
+	doc/_static/images/mtv-clone-passed-cloner-blocks.svg \
+	doc/_static/images/mtv-clone-passed-cloner-blocks.svg.license \
+	doc/_static/images/mtv-clone-passed-cloner-containers.fodg \
+	doc/_static/images/mtv-clone-passed-cloner-containers.fodg.license \
+	doc/_static/images/mtv-clone-passed-cloner-containers.svg \
+	doc/_static/images/mtv-clone-passed-cloner-containers.svg.license \
+	doc/_static/images/mtv-clone-stateful-per-block.fodg \
+	doc/_static/images/mtv-clone-stateful-per-block.fodg.license \
+	doc/_static/images/mtv-clone-stateful-per-block.svg \
+	doc/_static/images/mtv-clone-stateful-per-block.svg.license \
 	doc/_static/images/mtv_collection_sheet.png \
 	doc/_static/images/mtv_collection_sheet.png.license \
 	doc/_static/images/rtree_bounds2_tree.png \

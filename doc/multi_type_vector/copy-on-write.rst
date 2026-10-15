@@ -116,6 +116,47 @@ no copy constructor to fall back on.
    Do not specialize ``clone_value`` or ``clone_block`` for a value type stored
    in a copyable block; a ``static_assert`` rejects it at compile time.
 
+.. _mtv-copy-on-write-detach-cloners:
+
+Detaching through passed cloner instances
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A stateful ``clone_value`` specialization gets a new instance for each block
+by default, so state shared by elements of several blocks, or of several
+containers, is cloned once per block.  The
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::clone()` overload that takes
+``clone_value`` instances lets the caller pass its own instance to be used for
+every matching block of the call, as described in
+:ref:`mtv-example-cloning-stateful-shared`.  Under copy-on-write that call
+only borrows the blocks and clones nothing, so the passed instances are left
+untouched by it.
+
+The deferred clone accepts passed instances the same way: the
+:cpp:func:`~mdds::mtv::soa::multi_type_vector::detach()` overload that takes
+``clone_value`` instances clones every matching block through the passed
+instance when the container detaches.  A caller who wants one scope across
+several containers that share blocks of a common source detaches each of them
+with the same instance::
+
+    mdds::mtv::clone_value<pooled_string*> cloner;
+
+    auto clone1 = store1.clone(cloner); // borrows; cloner is untouched
+    auto clone2 = store2.clone(cloner);
+
+    clone1.detach(cloner); // clones the blocks through cloner
+    clone2.detach(cloner); // continues with the same cloner state
+
+The same instance is passed to both ``clone()`` and ``detach()`` so that the
+code behaves the same whether copy-on-write is enabled or not: with it
+disabled, ``clone()`` is where the blocks are cloned through the instance and
+``detach()`` is a no-op, and with it enabled it is the other way round.
+
+The passed instances are left untouched whenever nothing is cloned: when the
+container already owns its blocks, and when it is the last remaining sharer
+and reclaims the blocks instead of cloning them.  Mutating methods that
+detach implicitly always use a new instance per block; to detach through
+passed instances, call ``detach()`` explicitly before mutating.
+
 Forcing sole ownership with detach()
 ------------------------------------
 
