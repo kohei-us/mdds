@@ -12,61 +12,252 @@
 
 #include "multi_type_vector.hpp"
 
+#include <array>
+#include <concepts>
+#include <tuple>
+#include <type_traits>
+
 namespace mdds {
 
 namespace mtm {
 
 /**
- * Element type for multi_type_matrix.
+ * Element type for multi_type_matrix.  Its value is the block type id of
+ * the element block that stores the element, or mdds::mtm::element_empty
+ * for an empty element.
  */
-enum element_t
+using element_t = mdds::mtv::element_t;
+
+/**
+ * Element type value for an empty element.
+ */
+inline constexpr element_t element_empty = mdds::mtv::element_type_empty;
+
+namespace detail {
+
+template<typename T>
+concept element_block_type = std::derived_from<T, mdds::mtv::base_element_block> && requires {
+    { T::block_type } -> std::convertible_to<mdds::mtv::element_t>;
+    typename T::value_type;
+};
+
+template<typename T>
+struct is_element_block_list : std::false_type
 {
-    element_empty = mdds::mtv::element_type_empty,
-    element_boolean = mdds::mtv::element_type_boolean,
-    element_string = mdds::mtv::element_type_string,
-    element_numeric = mdds::mtv::element_type_double,
-    element_integer = mdds::mtv::element_type_int32
+};
+
+template<typename... Ts>
+struct is_element_block_list<std::tuple<Ts...>> : std::bool_constant<(element_block_type<Ts> && ...)>
+{
+};
+
+template<typename Traits>
+struct element_blocks_of
+{
+    using type = std::tuple<>;
+};
+
+template<typename Traits>
+    requires requires { typename Traits::element_blocks; }
+struct element_blocks_of<Traits>
+{
+    using type = typename Traits::element_blocks;
+};
+
+template<typename Blk, typename Tuple>
+struct prepend_block;
+
+template<typename Blk, typename... Ts>
+struct prepend_block<Blk, std::tuple<Ts...>>
+{
+    using type = std::tuple<Blk, Ts...>;
+};
+
+template<typename Traits>
+struct block_list_of
+{
+    using type =
+        typename prepend_block<typename Traits::numeric_element_block, typename element_blocks_of<Traits>::type>::type;
+};
+
+template<typename Tuple>
+struct make_block_funcs;
+
+template<typename... Ts>
+struct make_block_funcs<std::tuple<Ts...>>
+{
+    using type = mdds::mtv::element_block_funcs<Ts...>;
+};
+
+template<typename Blk, typename Tuple>
+struct is_block_in_list;
+
+template<typename Blk, typename... Ts>
+struct is_block_in_list<Blk, std::tuple<Ts...>> : std::bool_constant<(std::is_same_v<Blk, Ts> || ...)>
+{
+};
+
+template<typename Tuple>
+struct has_distinct_block_ids;
+
+template<typename... Ts>
+struct has_distinct_block_ids<std::tuple<Ts...>>
+{
+    static constexpr bool check()
+    {
+        constexpr std::array<mdds::mtv::element_t, sizeof...(Ts)> ids = {Ts::block_type...};
+
+        for (std::size_t i = 0; i < ids.size(); ++i)
+        {
+            for (std::size_t j = i + 1; j < ids.size(); ++j)
+            {
+                if (ids[i] == ids[j])
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    static constexpr bool value = check();
+};
+
+template<typename T, typename Tuple>
+struct is_listed_value : std::false_type
+{
+};
+
+template<typename T, typename... Ts>
+struct is_listed_value<T, std::tuple<Ts...>> : std::bool_constant<(std::is_same_v<T, typename Ts::value_type> || ...)>
+{
 };
 
 /**
- * Default matrix trait that uses std::string as its string type.
+ * Concept satisfied when the type T is the value type of one of the element
+ * blocks in the std::tuple Blocks.
+ */
+template<typename T, typename Blocks>
+concept listed_value_type = is_listed_value<T, Blocks>::value;
+
+template<typename T, typename Tuple>
+struct block_of;
+
+template<typename T>
+struct block_of<T, std::tuple<>>
+{
+    using type = void;
+};
+
+template<typename T, typename Blk, typename... Ts>
+struct block_of<T, std::tuple<Blk, Ts...>>
+{
+    using type = std::conditional_t<
+        std::is_same_v<T, typename Blk::value_type>, Blk, typename block_of<T, std::tuple<Ts...>>::type>;
+};
+
+/**
+ * Concept satisfied when the type T is the value type of one of the element
+ * blocks in the std::tuple Blocks, and that block provides references to
+ * its stored elements.  A block backed by std::vector<bool> does not.
+ */
+template<typename T, typename Blocks>
+concept referenceable_value_type =
+    !std::is_void_v<typename block_of<T, Blocks>::type> &&
+    std::is_lvalue_reference_v<typename block_of<T, Blocks>::type::store_type::const_reference>;
+
+} // namespace detail
+
+/**
+ * Concept that a matrix traits type must satisfy.  A matrix traits type
+ * specifies the element blocks that the matrix can store.  It must have the
+ * following members:
+ *
+ * <ul>
+ *   <li><code>numeric_element_block</code> - element block type that stores
+ *   the numeric elements.  Its value type must be constructible from 0.
+ *   This member is required.</li>
+ *   <li><code>element_blocks</code> - std::tuple that lists the element
+ *   block types of all the other element types the matrix can store, such
+ *   as boolean, integer and string.  The tuple is used only as a list of
+ *   types.  This member is optional.  When it is absent, the matrix stores
+ *   only numeric and empty elements.</li>
+ * </ul>
+ *
+ * Each block type must be an element block type whose value type has its
+ * element callbacks defined.  All block types must have distinct block type
+ * ids, and the numeric block type must not also appear in
+ * <code>element_blocks</code>.
+ */
+template<typename T>
+concept matrix_traits =
+    requires { typename T::numeric_element_block; } && detail::element_block_type<typename T::numeric_element_block> &&
+    std::constructible_from<typename T::numeric_element_block::value_type, int> &&
+    detail::is_element_block_list<typename detail::element_blocks_of<T>::type>::value;
+
+/**
+ * Default matrix traits type that uses double as its numeric type, and
+ * stores boolean, 32-bit integer and std::string values in addition to the
+ * numeric values.
  */
 struct std_string_traits
 {
-    typedef mdds::mtv::int32_element_block integer_element_block;
-    typedef mdds::mtv::string_element_block string_element_block;
+    using numeric_element_block = mdds::mtv::double_element_block;
+
+    using element_blocks =
+        std::tuple<mdds::mtv::boolean_element_block, mdds::mtv::int32_element_block, mdds::mtv::string_element_block>;
 };
 
 } // namespace mtm
 
 /**
- * Matrix that can store numeric, integer, boolean, empty and string types.
- * The string and integer types can be specified in the matrix trait
- * template parameter. To use std::string as the string type and int as the
- * integer type, use mdds::mtm::std_string_traits.
+ * Matrix that can store numeric and empty elements, plus elements of any
+ * other type specified in the matrix traits template parameter.  The matrix
+ * traits type specifies the element block type that stores the numeric
+ * elements, and the list of element block types that store all the other
+ * element types.  See mdds::mtm::matrix_traits for the details.  To store
+ * double, boolean, 32-bit integer and std::string values, use
+ * mdds::mtm::std_string_traits.
  *
  * Internally it uses mdds::multi_type_vector as its value store.  The
  * element values are linearly stored in column-major order.
  */
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 class multi_type_matrix
 {
     using traits_type = Traits;
 
-public:
-    using string_block_type = typename traits_type::string_element_block;
-    using integer_block_type = typename traits_type::integer_element_block;
+    using element_blocks_type = typename mtm::detail::element_blocks_of<traits_type>::type;
 
-    using string_type = typename string_block_type::value_type;
-    using integer_type = typename integer_block_type::value_type;
+public:
+    using numeric_block_type = typename traits_type::numeric_element_block;
+    using numeric_type = typename numeric_block_type::value_type;
     using size_type = std::size_t;
 
+    /**
+     * Element type value for an empty element.
+     */
+    static constexpr mtm::element_t element_empty = mtm::element_empty;
+
+    /**
+     * Element type value for a numeric element.  It is the block type id of
+     * the numeric element block.
+     */
+    static constexpr mtm::element_t element_numeric = numeric_block_type::block_type;
+
 private:
+    using block_list_type = typename mtm::detail::block_list_of<traits_type>::type;
+
+    static_assert(
+        !mtm::detail::is_block_in_list<numeric_block_type, element_blocks_type>::value,
+        "The numeric element block must not also appear in element_blocks.");
+
+    static_assert(
+        mtm::detail::has_distinct_block_ids<block_list_type>::value,
+        "All element blocks of the matrix must have distinct block type ids.");
+
     struct mtv_traits : public mdds::mtv::default_traits
     {
-        using block_funcs = mdds::mtv::element_block_funcs<
-            mdds::mtv::boolean_element_block, mdds::mtv::int8_element_block, mdds::mtv::double_element_block,
-            typename traits_type::string_element_block, typename traits_type::integer_element_block>;
+        using block_funcs = typename mtm::detail::make_block_funcs<block_list_type>::type;
     };
 
     using store_type = mdds::multi_type_vector<mtv_traits>;
@@ -76,9 +267,6 @@ public:
     using const_position_type = typename store_type::const_position_type;
 
     using element_block_type = typename mtv::base_element_block;
-
-    using boolean_block_type = typename mtv::boolean_element_block;
-    using numeric_block_type = typename mtv::double_element_block;
 
     struct size_pair_type
     {
@@ -129,24 +317,6 @@ public:
         void assign(const const_position_type& pos, size_type section_size);
     };
 
-    static mtm::element_t to_mtm_type(mdds::mtv::element_t mtv_type)
-    {
-        switch (mtv_type)
-        {
-            case string_block_type::block_type:
-                return mdds::mtm::element_string;
-            case integer_block_type::block_type:
-                return mdds::mtm::element_integer;
-            case mdds::mtv::element_type_double:
-            case mdds::mtv::element_type_boolean:
-            case mdds::mtv::element_type_empty:
-                // These types share the same numeric values.
-                return static_cast<mtm::element_t>(mtv_type);
-            default:
-                throw type_error("multi_type_matrix: unknown element type.");
-        }
-    }
-
 private:
     template<typename FuncT>
     struct walk_func
@@ -158,12 +328,39 @@ private:
         void operator()(const typename store_type::const_iterator::value_type& mtv_node)
         {
             element_block_node_type mtm_node;
-            mtm_node.type = to_mtm_type(mtv_node.type);
+            mtm_node.type = mtv_node.type;
             mtm_node.size = mtv_node.size;
             mtm_node.data = mtv_node.data;
             m_func(mtm_node);
         }
     };
+
+    /**
+     * Throw a mdds::type_error if the type is not the type of one of the
+     * element blocks of this matrix.
+     *
+     * @param type Element type to validate.
+     */
+    static void validate_type(mtm::element_t type);
+
+    /**
+     * Call the templated call operator of the function object, with the
+     * element block type whose block type id equals the specified type as
+     * its template argument.  Throw a mdds::type_error if no element block
+     * of this matrix has that type.
+     *
+     * @param type Element type of the block.  It must not be empty.
+     * @param func Function object to call with the matching block type.
+     */
+    template<typename FuncT>
+    static void dispatch_block(mtm::element_t type, FuncT&& func);
+
+    /**
+     * Create a store initialized with the values in the specified range,
+     * after validating the type of the values.
+     */
+    template<typename T>
+    static store_type create_store(size_type init_size, const T& it_begin, const T& it_end);
 
     static constexpr bool nothrow_default_constructible_v =
         std::is_nothrow_default_constructible_v<store_type> && std::is_nothrow_default_constructible_v<size_pair_type>;
@@ -337,131 +534,119 @@ public:
     const_position_type end_position() const;
 
     /**
-     * Get the type of element from a position object.  The type can be one
-     * of empty, string, numeric, or boolean.
+     * Get the type of element from a position object.  The type is either
+     * element_empty or the block type id of the element block that stores
+     * the element.
      *
-     * @param pos position object of an element
+     * @param pos Position object of an element.
      *
-     * @return element type.
+     * @return Element type.
      */
     mtm::element_t get_type(const const_position_type& pos) const;
 
     /**
-     * Get the type of element specified by its position.  The type can be one
-     * of empty, string, numeric, or boolean.
+     * Get the type of element specified by its position.  The type is either
+     * element_empty or the block type id of the element block that stores
+     * the element.
      *
-     * @return element type.
+     * @param row Row position of the element.
+     * @param col Column position of the element.
+     *
+     * @return Element type.
      */
     mtm::element_t get_type(size_type row, size_type col) const;
 
     /**
-     * Get a numeric representation of the element.  If the element is of
-     * numeric type, its value is returned.  If it's of boolean type, either 1
-     * or 0 is returned depending on whether it's true or false.  If it's of
-     * empty or string type, 0 is returned.
+     * Get the numeric value of the element.  If the element is of numeric
+     * type, its value is returned.  If it's empty, 0 is returned.  If it's of
+     * any other type, a mdds::type_error exception is thrown.
      *
-     * @param row row position of the element.
-     * @param col column position of the element.
+     * @param row Row position of the element.
+     * @param col Column position of the element.
      *
-     * @return numeric representation of the element.
+     * @return Numeric value of the element.
      */
-    double get_numeric(size_type row, size_type col) const;
+    numeric_type get_numeric(size_type row, size_type col) const;
 
     /**
-     * Get a numeric representation of the element from a position object.
-     * If the element is of numeric type, its value is returned.  If it's of
-     * boolean type, either 1 or 0 is returned depending on whether it's true
-     * or false.  If it's of empty or string type, 0 is returned.
+     * Get the numeric value of the element from a position object.  If the
+     * element is of numeric type, its value is returned.  If it's empty, 0 is
+     * returned.  If it's of any other type, a mdds::type_error exception is
+     * thrown.
      *
-     * @param pos position object of an element
+     * @param pos Position object of an element.
      *
-     * @return numeric representation of the element.
+     * @return Numeric value of the element.
      */
-    double get_numeric(const const_position_type& pos) const;
-
-    /**
-     * Get an integer representation of the element.  If the element is of
-     * integer type, its value is returned.  If it's of boolean type, either 1
-     * or 0 is returned depending on whether it's true or false.  If it's of
-     * empty or string type, 0 is returned.
-     *
-     * @param row row position of the element.
-     * @param col column position of the element.
-     *
-     * @return integer representation of the element.
-     */
-    integer_type get_integer(size_type row, size_type col) const;
-
-    /**
-     * Get an integer representation of the element.  If the element is of
-     * integer type, its value is returned.  If it's of boolean type, either 1
-     * or 0 is returned depending on whether it's true or false.  If it's of
-     * empty or string type, 0 is returned.
-     *
-     * @param pos position object of an element
-     *
-     * @return integer representation of the element.
-     */
-    integer_type get_integer(const const_position_type& pos) const;
-
-    /**
-     * Get a boolean representation of the element.  If the element is of
-     * numeric type, true is returned if it's non-zero, otherwise false is
-     * returned. If it's of boolean type, its value is returned.  If it's of
-     * empty or string type, false is returned.
-     *
-     * @param row row position of the element.
-     * @param col column position of the element.
-     *
-     * @return boolean representation of the element.
-     */
-    bool get_boolean(size_type row, size_type col) const;
-
-    /**
-     * Get a boolean representation of the element from a position object.
-     * If the element is of numeric type, true is returned if it's non-zero,
-     * otherwise false is returned. If it's of boolean type, its value is
-     * returned.  If it's of empty or string type, false is returned.
-     *
-     * @param pos position object of an element
-     *
-     * @return boolean representation of the element.
-     */
-    bool get_boolean(const const_position_type& pos) const;
-
-    /**
-     * Get the value of a string element.  If the element is not of string
-     * type, it throws an exception.
-     *
-     * @param row row position of the element.
-     * @param col column position of the element.
-     *
-     * @return value of the element.
-     */
-    const string_type& get_string(size_type row, size_type col) const;
-
-    /**
-     * Get the value of a string element from a position object.  If the
-     * element is not of string type, it throws an exception.
-     *
-     * @param pos position object of an element
-     *
-     * @return value of the element.
-     */
-    const string_type& get_string(const const_position_type& pos) const;
+    numeric_type get_numeric(const const_position_type& pos) const;
 
     /**
      * Get the value of element at specified position.  The caller must
-     * explicitly specify the return type.  If the element is not of the
-     * specified type, it throws an exception.
+     * explicitly specify the value type.  If the element is empty, the empty
+     * value of the specified type is returned.  If the element is of a
+     * different type, a mdds::type_error exception is thrown.
      *
-     * @param row row position of the element.
-     * @param col column position of the element.
+     * @param row Row position of the element.
+     * @param col Column position of the element.
      *
-     * @return value of the element.
+     * @return Value of the element.
      */
-    template<typename _T>
-    _T get(size_type row, size_type col) const;
+    template<typename T>
+    T get(size_type row, size_type col) const;
+
+    /**
+     * Get the value of element from a position object.  The caller must
+     * explicitly specify the value type.  If the element is empty, the empty
+     * value of the specified type is returned.  If the element is of a
+     * different type, a mdds::type_error exception is thrown.
+     *
+     * @param pos Position object of an element.
+     *
+     * @return Value of the element.
+     */
+    template<typename T>
+    T get(const const_position_type& pos) const;
+
+    /**
+     * Get a reference to the value of element at specified position.  The
+     * caller must explicitly specify the value type.  Unlike get(), this
+     * method throws a mdds::type_error exception when the element is empty,
+     * since there is no stored value to reference.  It also throws when the
+     * element is of a different type.
+     *
+     * The reference stays valid until the matrix is next modified.
+     *
+     * This method is disabled via requires clause for a value type whose
+     * element block does not provide references to its elements, such as a
+     * block backed by std::vector<bool>.
+     *
+     * @param row Row position of the element.
+     * @param col Column position of the element.
+     *
+     * @return Reference to the value of the element.
+     */
+    template<mtm::detail::referenceable_value_type<typename mtm::detail::block_list_of<Traits>::type> T>
+    const T& get_ref(size_type row, size_type col) const;
+
+    /**
+     * Get a reference to the value of element from a position object.  The
+     * caller must explicitly specify the value type.  Unlike get(), this
+     * method throws a mdds::type_error exception when the element is empty,
+     * since there is no stored value to reference.  It also throws when the
+     * element is of a different type.
+     *
+     * The reference stays valid until the matrix is next modified.
+     *
+     * This method is disabled via requires clause for a value type whose
+     * element block does not provide references to its elements, such as a
+     * block backed by std::vector<bool>.
+     *
+     * @param pos Position object of an element.
+     *
+     * @return Reference to the value of the element.
+     */
+    template<mtm::detail::referenceable_value_type<typename mtm::detail::block_list_of<Traits>::type> T>
+    const T& get_ref(const const_position_type& pos) const;
 
     /**
      * Set specified element position empty.
@@ -514,7 +699,7 @@ public:
      * @param col column index of the element.
      * @param val new value to set.
      */
-    void set(size_type row, size_type col, double val);
+    void set(size_type row, size_type col, numeric_type val);
 
     /**
      * Set a numeric value to an element at specified position.
@@ -524,64 +709,32 @@ public:
      *
      * @return position of the element block where the new value has been set.
      */
-    position_type set(const position_type& pos, double val);
+    position_type set(const position_type& pos, numeric_type val);
 
     /**
-     * Set a boolean value to an element at specified position.
+     * Set a value to an element at specified position.  The type of the
+     * value must be the value type of one of the element blocks listed in
+     * the <code>element_blocks</code> member of the matrix traits type.
      *
-     * @param row row index of the element.
-     * @param col column index of the element.
-     * @param val new value to set.
+     * @param row Row index of the element.
+     * @param col Column index of the element.
+     * @param val New value to set.
      */
-    void set(size_type row, size_type col, bool val);
+    template<mtm::detail::listed_value_type<typename mtm::detail::element_blocks_of<Traits>::type> T>
+    void set(size_type row, size_type col, const T& val);
 
     /**
-     * Set a boolean value to an element at specified position.
+     * Set a value to an element at specified position.  The type of the
+     * value must be the value type of one of the element blocks listed in
+     * the <code>element_blocks</code> member of the matrix traits type.
      *
-     * @param pos position of the element to update.
-     * @param val new value to set.
+     * @param pos Position of the element to update.
+     * @param val New value to set.
      *
-     * @return position of the element where the new value has been set.
+     * @return Position of the element block where the new value has been set.
      */
-    position_type set(const position_type& pos, bool val);
-
-    /**
-     * Set a string value to an element at specified position.
-     *
-     * @param row row index of the element.
-     * @param col column index of the element.
-     * @param str new value to set.
-     */
-    void set(size_type row, size_type col, const string_type& str);
-
-    /**
-     * Set a string value to an element at specified position.
-     *
-     * @param pos position of the element to update.
-     * @param str new value to set.
-     *
-     * @return position of the element block where the new value has been set.
-     */
-    position_type set(const position_type& pos, const string_type& str);
-
-    /**
-     * Set an integer value to an element at specified position.
-     *
-     * @param row row index of the element.
-     * @param col column index of the element.
-     * @param val new value to set.
-     */
-    void set(size_type row, size_type col, integer_type val);
-
-    /**
-     * Set an integer value to an element at specified position.
-     *
-     * @param pos position of the element to update.
-     * @param val new value to set.
-     *
-     * @return position of the element block where the new value has been set.
-     */
-    position_type set(const position_type& pos, integer_type val);
+    template<mtm::detail::listed_value_type<typename mtm::detail::element_blocks_of<Traits>::type> T>
+    position_type set(const position_type& pos, const T& val);
 
     /**
      * Set values of multiple elements at once, starting at specified element
@@ -705,12 +858,26 @@ public:
 
     /**
      * Check whether or not this matrix is numeric.  A numeric matrix contains
-     * only numeric or boolean elements.  An empty matrix is not numeric.
+     * only numeric elements.  An empty matrix is not numeric.
      *
-     * @return true if the matrix contains only numeric or boolean elements,
-     *         or false otherwise.
+     * @return True if the matrix contains only numeric elements, or false
+     *         otherwise.
      */
     bool numeric() const;
+
+    /**
+     * Check whether or not every element block of this matrix is one of the
+     * specified element block types.  An empty element never matches, so a
+     * matrix that contains an empty element returns false.  An empty matrix
+     * also returns false.
+     *
+     * Each specified block type must be an element block of this matrix.
+     *
+     * @return True if every element block is one of the specified block
+     *         types, or false otherwise.
+     */
+    template<typename... Blks>
+    bool all_of() const;
 
     /**
      * Check whether or not this matrix is empty.

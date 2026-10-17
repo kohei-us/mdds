@@ -73,6 +73,49 @@ mdds 4.0.0 (next target)
     moved-from instance with no identity, swap() exchanges it, while
     copies and clones each get a new identity.
 
+* multi_type_matrix
+
+  * the matrix traits type now specifies all element blocks of the
+    matrix: the numeric_element_block member names the block for the
+    numeric elements, and the optional element_blocks member lists the
+    blocks of all the other element types as a std::tuple.  Boolean,
+    integer and string are no longer built in, and a user-defined type
+    can now be stored by adding its block to the list.
+    mdds::mtm::std_string_traits stores the same element types as
+    before.
+
+  * mdds::mtm::element_t is now an alias of mdds::mtv::element_t, and
+    get_type() returns the block type id of the element.  The
+    element_boolean, element_numeric, element_integer and
+    element_string enumerators have been removed in favor of the
+    block type ids and the new multi_type_matrix::element_numeric
+    member.
+
+  * removed get_boolean(), get_integer() and get_string() in favor of
+    get<T>(), which gains an overload that takes a position object,
+    and now throws mdds::type_error when the element is of a
+    different type.  Added get_ref<T>(), which returns a reference to
+    the stored value instead of a copy, and throws mdds::type_error
+    for an empty element.  Also removed the boolean_block_type,
+    string_block_type, integer_block_type, string_type and
+    integer_type member types.
+
+  * get_numeric() returns the new numeric_type, and throws
+    mdds::type_error on an element that is neither numeric nor empty
+    instead of converting boolean and integer values.  numeric() no
+    longer counts boolean and integer elements as numeric; the new
+    all_of<>() method checks whether every element block is one of
+    the specified block types, which covers the previous rule.
+
+  * set() takes the numeric type, or any value type listed in the
+    element_blocks member of the traits type.
+
+  * added a new code example in the documentation on storing a
+    user-defined type.
+
+  * fixed transpose(), copy() and resize() throwing on a matrix that
+    stores integer elements.
+
 * trie_map and packed_trie_map
 
   * the insert(), erase(), find() and prefix_search() methods now take

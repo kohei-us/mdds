@@ -10,6 +10,7 @@ EXTRA_PROGRAMS = \
 	flat-segment-tree \
 	flat-segment-tree-itrs \
 	multi-type-matrix \
+	multi-type-matrix-custom \
 	packed-trie-map \
 	packed-trie-state-custom \
 	packed-trie-state-int \
@@ -25,6 +26,7 @@ EXTRA_PROGRAMS = \
 flat_segment_tree_SOURCES = flat_segment_tree.cpp
 flat_segment_tree_itrs_SOURCES = flat_segment_tree_itrs.cpp
 multi_type_matrix_SOURCES = multi_type_matrix.cpp
+multi_type_matrix_custom_SOURCES = multi_type_matrix_custom.cpp
 packed_trie_map_SOURCES = packed_trie_map.cpp
 packed_trie_state_custom_SOURCES = packed_trie_state_custom.cpp
 packed_trie_state_int_SOURCES = packed_trie_state_int.cpp
@@ -41,6 +43,7 @@ TESTS = \
 	flat-segment-tree \
 	flat-segment-tree-itrs \
 	multi-type-matrix \
+	multi-type-matrix-custom \
 	packed-trie-map \
 	packed-trie-state-custom \
 	packed-trie-state-int \

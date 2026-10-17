@@ -26,7 +26,7 @@ Contents:
    segment_tree/index.rst
    point_quad_tree.rst
    multi_type_vector/index.rst
-   multi_type_matrix.rst
+   multi_type_matrix/index.rst
    sorted_string_map/index.rst
    trie_map/index.rst
    rtree/index.rst

@@ -54,6 +54,61 @@ multi_type_vector
   container gets detected and ignored, and the block lookup falls back to an
   unhinted search.
 
+multi_type_matrix
+^^^^^^^^^^^^^^^^^
+
+* The matrix traits type now specifies all element blocks of the matrix.  It
+  must have a ``numeric_element_block`` member that names the block storing
+  the numeric elements, and may have an ``element_blocks`` member, a
+  ``std::tuple`` that lists the blocks of all the other element types.  The
+  previous ``string_element_block`` and ``integer_element_block`` members
+  are no longer used, and boolean, integer and string are no longer built
+  in.  A custom traits type must be rewritten in the new form;
+  ``mdds::mtm::std_string_traits`` keeps storing the same five element
+  types as before.
+
+* ``mdds::mtm::element_t`` is now an alias of ``mdds::mtv::element_t``, and
+  ``get_type()`` and the ``type`` member of ``element_block_node_type`` now
+  return the block type id of the element.  ``mdds::mtm::element_boolean``,
+  ``element_numeric``, ``element_integer`` and ``element_string`` have been
+  removed.  Use ``multi_type_matrix::element_numeric`` for numeric elements,
+  and the ``block_type`` member of the element block type, for example
+  ``mdds::mtv::boolean_element_block::block_type``, for all other types.
+  ``mdds::mtm::element_empty`` remains available.
+
+* The ``boolean_block_type``, ``string_block_type``, ``integer_block_type``,
+  ``string_type`` and ``integer_type`` member types have been removed.  Use
+  the element block types listed in the traits type directly.
+  ``numeric_block_type`` remains, and a new ``numeric_type`` member type has
+  been added.
+
+* ``get_boolean()``, ``get_integer()`` and ``get_string()`` have been
+  removed.  Use ``get<T>()`` instead, which now also has an overload that
+  takes a position object.  ``get<T>()`` returns the value by value, and
+  the empty value of ``T`` for an empty element.  Code that kept the
+  reference returned by ``get_string()`` should use the new
+  ``get_ref<T>()``, which returns a reference to the stored value and
+  throws ``mdds::type_error`` for an empty element.
+
+* ``get_numeric()`` now returns ``numeric_type``, and no longer converts
+  boolean and integer values.  It returns the value of a numeric element, 0
+  for an empty element, and throws ``mdds::type_error`` for an element of any
+  other type.  Code that relied on the conversion must check the element
+  type with ``get_type()`` first and convert the value itself.
+
+* ``numeric()`` now returns true only when all elements are numeric.
+  Boolean and integer elements no longer count as numeric.  This change is
+  not detected by the compiler, so every call site needs to be reviewed.
+  Code that wants the previous behavior can use the new ``all_of<>()``
+  method, which takes the element block types to accept, for example
+  ``all_of<numeric_block_type, mdds::mtv::boolean_element_block>()``.
+
+* The ``set()`` overloads that took a boolean, integer or string value have
+  been replaced by a template overload that takes a value of any type listed
+  in ``element_blocks``.  The type must match exactly, so a string literal is
+  no longer accepted for a ``std::string`` block; wrap it in
+  ``std::string``.
+
 trie_map & packed_trie_map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

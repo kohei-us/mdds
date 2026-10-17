@@ -39,25 +39,25 @@ public:
     {
         switch (node.type)
         {
-            case mtm::element_boolean:
+            case mtv::element_type_boolean:
             {
-                mtx_type::boolean_block_type::const_iterator it = mtx_type::boolean_block_type::begin(*node.data);
+                mtv::boolean_element_block::const_iterator it = mtv::boolean_element_block::begin(*node.data);
                 std::advance(it, node.offset);
-                mtx_type::boolean_block_type::const_iterator it_end = it;
+                mtv::boolean_element_block::const_iterator it_end = it;
                 std::advance(it_end, node.size);
                 std::for_each(it, it_end, print_element<bool>());
             }
             break;
-            case mtm::element_string:
+            case mtv::element_type_string:
             {
-                mtx_type::string_block_type::const_iterator it = mtx_type::string_block_type::begin(*node.data);
+                mtv::string_element_block::const_iterator it = mtv::string_element_block::begin(*node.data);
                 std::advance(it, node.offset);
-                mtx_type::string_block_type::const_iterator it_end = it;
+                mtv::string_element_block::const_iterator it_end = it;
                 std::advance(it_end, node.size);
-                std::for_each(it, it_end, print_element<mtx_type::string_type>());
+                std::for_each(it, it_end, print_element<std::string>());
             }
             break;
-            case mtm::element_numeric:
+            case mtx_type::element_numeric:
             {
                 mtx_type::numeric_block_type::const_iterator it = mtx_type::numeric_block_type::begin(*node.data);
                 std::advance(it, node.offset);
@@ -180,10 +180,10 @@ void push_to_buffer(const mtx_type::element_block_node_type& node, std::vector<s
 }
 
 template<>
-void push_to_buffer<mtx_type::boolean_block_type>(
+void push_to_buffer<mtv::boolean_element_block>(
     const mtx_type::element_block_node_type& node, std::vector<std::string>& buf)
 {
-    using blk_type = mtx_type::boolean_block_type;
+    using blk_type = mtv::boolean_element_block;
     auto it = node.begin<blk_type>();
     auto ite = node.end<blk_type>();
     std::for_each(it, ite, [&](bool v) {
@@ -205,13 +205,13 @@ class parallel_walk_element_block
     {
         switch (node.type)
         {
-            case mtm::element_boolean:
-                push_to_buffer<mtx_type::boolean_block_type>(node, buf);
+            case mtv::element_type_boolean:
+                push_to_buffer<mtv::boolean_element_block>(node, buf);
                 break;
-            case mtm::element_string:
-                push_to_buffer<mtx_type::string_block_type>(node, buf);
+            case mtv::element_type_string:
+                push_to_buffer<mtv::string_element_block>(node, buf);
                 break;
-            case mtm::element_numeric:
+            case mtx_type::element_numeric:
                 push_to_buffer<mtx_type::numeric_block_type>(node, buf);
                 break;
             case mtm::element_empty:
@@ -440,7 +440,7 @@ void mtm_test_walk_with_lambda()
     mtx_type mtx(2, 2, values.begin(), values.end());
 
     mtx.walk([](const mtx_type::element_block_node_type& node) {
-        TEST_ASSERT(node.type == mdds::mtm::element_numeric);
+        TEST_ASSERT(node.type == mtx_type::element_numeric);
         TEST_ASSERT(node.offset == 0);
         TEST_ASSERT(node.size == 4);
     });
@@ -458,8 +458,8 @@ void mtm_test_walk_with_lambda()
     };
 
     std::vector<section> expected = {
-        {mdds::mtm::element_numeric, 0, 1},
-        {mdds::mtm::element_numeric, 2, 1},
+        {mtx_type::element_numeric, 0, 1},
+        {mtx_type::element_numeric, 2, 1},
     };
 
     std::vector<section> actual;
@@ -514,8 +514,8 @@ void mtm_test_parallel_walk_with_lambda()
     };
 
     std::vector<section_pair> expected = {
-        {{mdds::mtm::element_numeric, 0, 2}, {mdds::mtm::element_numeric, 0, 2}},
-        {{mdds::mtm::element_numeric, 2, 2}, {mdds::mtm::element_boolean, 0, 2}},
+        {{mtx_type::element_numeric, 0, 2}, {mtx_type::element_numeric, 0, 2}},
+        {{mtx_type::element_numeric, 2, 2}, {mdds::mtv::element_type_boolean, 0, 2}},
     };
 
     std::vector<section_pair> actual;
@@ -548,15 +548,15 @@ void mtm_test_parallel_walk_with_lambda()
     mtx3.set(2, 2, false);
 
     expected = {
-        {{mdds::mtm::element_numeric, 0, 2}, {mdds::mtm::element_string, 0, 2}},
-        {{mdds::mtm::element_boolean, 0, 1}, {mdds::mtm::element_string, 2, 1}},
+        {{mtx_type::element_numeric, 0, 2}, {mdds::mtv::element_type_string, 0, 2}},
+        {{mdds::mtv::element_type_boolean, 0, 1}, {mdds::mtv::element_type_string, 2, 1}},
 
-        {{mdds::mtm::element_numeric, 0, 2}, {mdds::mtm::element_numeric, 0, 2}},
-        {{mdds::mtm::element_numeric, 2, 1}, {mdds::mtm::element_string, 0, 1}},
+        {{mtx_type::element_numeric, 0, 2}, {mtx_type::element_numeric, 0, 2}},
+        {{mtx_type::element_numeric, 2, 1}, {mdds::mtv::element_type_string, 0, 1}},
 
-        {{mdds::mtm::element_numeric, 4, 1}, {mdds::mtm::element_numeric, 0, 1}},
-        {{mdds::mtm::element_boolean, 0, 1}, {mdds::mtm::element_numeric, 1, 1}},
-        {{mdds::mtm::element_boolean, 1, 1}, {mdds::mtm::element_string, 0, 1}},
+        {{mtx_type::element_numeric, 4, 1}, {mtx_type::element_numeric, 0, 1}},
+        {{mdds::mtv::element_type_boolean, 0, 1}, {mtx_type::element_numeric, 1, 1}},
+        {{mdds::mtv::element_type_boolean, 1, 1}, {mdds::mtv::element_type_string, 0, 1}},
     };
 
     actual.clear();

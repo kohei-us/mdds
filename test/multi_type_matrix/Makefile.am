@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/test/include \
 	$(CXXFLAGS_UNITTESTS)
 
-check_PROGRAMS = test-main test-walk
+check_PROGRAMS = test-main test-walk test-custom
 
 test_main_SOURCES = \
 	test_main.cpp \
@@ -17,6 +17,10 @@ test_walk_SOURCES = \
 	test_walk.cpp \
 	$(top_srcdir)/test/test_global.cpp
 
-TESTS = test-main test-walk
+test_custom_SOURCES = \
+	test_custom.cpp \
+	$(top_srcdir)/test/test_global.cpp
+
+TESTS = test-main test-walk test-custom
 
 @VALGRIND_CHECK_RULES@

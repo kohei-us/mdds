@@ -4,29 +4,29 @@
 
 namespace mdds {
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 multi_type_matrix<Traits>::element_block_node_type::element_block_node_type() noexcept(std::is_fundamental_v<size_type>)
     : type(mtm::element_empty), offset(0), size(0), data(nullptr)
 {}
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 multi_type_matrix<Traits>::element_block_node_type::element_block_node_type(
     const element_block_node_type& other) noexcept(std::is_fundamental_v<size_type>)
     : type(other.type), offset(other.offset), size(other.size), data(other.data)
 {}
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::element_block_node_type::assign(const const_position_type& pos, size_type section_size)
 {
     assert(section_size <= pos.first->size - pos.second);
 
-    type = to_mtm_type(pos.first->type);
+    type = pos.first->type;
     offset = pos.second;
     size = section_size;
     data = pos.first->data;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _Blk>
 typename _Blk::const_iterator multi_type_matrix<Traits>::element_block_node_type::begin() const
 {
@@ -35,7 +35,7 @@ typename _Blk::const_iterator multi_type_matrix<Traits>::element_block_node_type
     return it;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _Blk>
 typename _Blk::const_iterator multi_type_matrix<Traits>::element_block_node_type::end() const
 {
@@ -44,85 +44,78 @@ typename _Blk::const_iterator multi_type_matrix<Traits>::element_block_node_type
     return it;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::next_position(const position_type& pos)
 {
     return store_type::next_position(pos);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::const_position_type multi_type_matrix<Traits>::next_position(
     const const_position_type& pos)
 {
     return store_type::next_position(pos);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 multi_type_matrix<Traits>::multi_type_matrix() noexcept(nothrow_default_constructible_v)
 {}
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 multi_type_matrix<Traits>::multi_type_matrix(size_type rows, size_type cols) : m_store(rows * cols), m_size(rows, cols)
 {}
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _T>
 multi_type_matrix<Traits>::multi_type_matrix(size_type rows, size_type cols, const _T& value)
     : m_store(rows * cols, value), m_size(rows, cols)
 {}
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _T>
 multi_type_matrix<Traits>::multi_type_matrix(size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
-    : m_store(rows * cols, it_begin, it_end), m_size(rows, cols)
-{
-    if (m_store.empty())
-        return;
+    : m_store(create_store(rows * cols, it_begin, it_end)), m_size(rows, cols)
+{}
 
-    // Throw an exception when trying to construct with data that the matrix doesn't support.
-    typename store_type::iterator it = m_store.begin();
-    to_mtm_type(it->type);
-}
-
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 multi_type_matrix<Traits>::multi_type_matrix(const multi_type_matrix& other)
     : m_store(other.m_store), m_size(other.m_size)
 {}
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 bool multi_type_matrix<Traits>::operator==(const multi_type_matrix& r) const noexcept(nothrow_eq_comparable_v)
 {
     return m_size == r.m_size && m_store == r.m_store;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::position(size_type row, size_type col)
 {
     return m_store.position(get_pos(row, col));
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::position(
     const position_type& pos_hint, size_type row, size_type col)
 {
     return m_store.position(pos_hint.first, get_pos(row, col));
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::const_position_type multi_type_matrix<Traits>::position(
     size_type row, size_type col) const
 {
     return m_store.position(get_pos(row, col));
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::const_position_type multi_type_matrix<Traits>::position(
     const const_position_type& pos_hint, size_type row, size_type col) const
 {
     return m_store.position(pos_hint.first, get_pos(row, col));
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::size_pair_type multi_type_matrix<Traits>::matrix_position(
     const const_position_type& pos) const
 {
@@ -132,120 +125,106 @@ typename multi_type_matrix<Traits>::size_pair_type multi_type_matrix<Traits>::ma
     return size_pair_type(row, col);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::end_position()
 {
     return position_type(m_store.end(), 0);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::const_position_type multi_type_matrix<Traits>::end_position() const
 {
     return const_position_type(m_store.end(), 0);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 mtm::element_t multi_type_matrix<Traits>::get_type(const const_position_type& pos) const
 {
-    return to_mtm_type(pos.first->type);
+    return pos.first->type;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 mtm::element_t multi_type_matrix<Traits>::get_type(size_type row, size_type col) const
 {
-    return to_mtm_type(m_store.get_type(get_pos(row, col)));
+    return m_store.get_type(get_pos(row, col));
 }
 
-template<typename Traits>
-double multi_type_matrix<Traits>::get_numeric(size_type row, size_type col) const
+template<mtm::matrix_traits Traits>
+typename multi_type_matrix<Traits>::numeric_type multi_type_matrix<Traits>::get_numeric(
+    size_type row, size_type col) const
 {
     return get_numeric(m_store.position(get_pos(row, col)));
 }
 
-template<typename Traits>
-double multi_type_matrix<Traits>::get_numeric(const const_position_type& pos) const
+template<mtm::matrix_traits Traits>
+typename multi_type_matrix<Traits>::numeric_type multi_type_matrix<Traits>::get_numeric(
+    const const_position_type& pos) const
 {
-    switch (pos.first->type)
+    if (pos.first->type == element_numeric)
+        return store_type::template get<numeric_block_type>(pos);
+
+    if (pos.first->type == element_empty)
+        return numeric_type(0);
+
+    throw type_error("multi_type_matrix: element is not of numeric type.");
+}
+
+template<mtm::matrix_traits Traits>
+template<typename T>
+T multi_type_matrix<Traits>::get(size_type row, size_type col) const
+{
+    return get<T>(m_store.position(get_pos(row, col)));
+}
+
+template<mtm::matrix_traits Traits>
+template<typename T>
+T multi_type_matrix<Traits>::get(const const_position_type& pos) const
+{
+    // The element callbacks of the standard value types are in mdds::mtv.
+    using mtv::mdds_mtv_get_empty_value;
+    using mtv::mdds_mtv_get_value;
+
+    T val{};
+
+    if (pos.first->type == element_empty)
     {
-        case mtv::element_type_double:
-            return mtv::double_element_block::at(*pos.first->data, pos.second);
-        case integer_block_type::block_type:
-            return integer_block_type::at(*pos.first->data, pos.second);
-        case mtv::element_type_boolean:
-        {
-            // vector<bool> cannot return reference i.e. we can't use at() here.
-            typename mtv::boolean_element_block::const_iterator it =
-                mtv::boolean_element_block::begin(*pos.first->data);
-            std::advance(it, pos.second);
-            return *it;
-        }
-        case string_block_type::block_type:
-        case mtv::element_type_empty:
-            return 0.0;
-        default:
-            throw general_error("multi_type_matrix: unknown element type.");
+        mdds_mtv_get_empty_value(val);
+        return val;
     }
-}
 
-template<typename Traits>
-typename multi_type_matrix<Traits>::integer_type multi_type_matrix<Traits>::get_integer(
-    size_type row, size_type col) const
-{
-    return get_integer(m_store.position(get_pos(row, col)));
-}
+    if (pos.first->type != store_type::get_element_type(val))
+        throw type_error("multi_type_matrix: element is not of the requested type.");
 
-template<typename Traits>
-typename multi_type_matrix<Traits>::integer_type multi_type_matrix<Traits>::get_integer(
-    const const_position_type& pos) const
-{
-    return static_cast<integer_type>(get_numeric(pos));
-}
-
-template<typename Traits>
-bool multi_type_matrix<Traits>::get_boolean(size_type row, size_type col) const
-{
-    return static_cast<bool>(get_numeric(row, col));
-}
-
-template<typename Traits>
-bool multi_type_matrix<Traits>::get_boolean(const const_position_type& pos) const
-{
-    return static_cast<bool>(get_numeric(pos));
-}
-
-template<typename Traits>
-const typename multi_type_matrix<Traits>::string_type& multi_type_matrix<Traits>::get_string(
-    size_type row, size_type col) const
-{
-    return get_string(m_store.position(get_pos(row, col)));
-}
-
-template<typename Traits>
-const typename multi_type_matrix<Traits>::string_type& multi_type_matrix<Traits>::get_string(
-    const const_position_type& pos) const
-{
-    if (pos.first->type != string_block_type::block_type)
-        throw general_error("multi_type_matrix: unknown element type.");
-
-    return string_block_type::at(*pos.first->data, pos.second);
-}
-
-template<typename Traits>
-template<typename _T>
-_T multi_type_matrix<Traits>::get(size_type row, size_type col) const
-{
-    _T val;
-    m_store.get(get_pos(row, col), val);
+    mdds_mtv_get_value(*pos.first->data, pos.second, val);
     return val;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
+template<mtm::detail::referenceable_value_type<typename mtm::detail::block_list_of<Traits>::type> T>
+const T& multi_type_matrix<Traits>::get_ref(size_type row, size_type col) const
+{
+    return get_ref<T>(m_store.position(get_pos(row, col)));
+}
+
+template<mtm::matrix_traits Traits>
+template<mtm::detail::referenceable_value_type<typename mtm::detail::block_list_of<Traits>::type> T>
+const T& multi_type_matrix<Traits>::get_ref(const const_position_type& pos) const
+{
+    using block_type = typename mtm::detail::block_of<T, block_list_type>::type;
+
+    if (pos.first->type != block_type::block_type)
+        throw type_error("multi_type_matrix: element is empty or not of the requested type.");
+
+    return block_type::at(*pos.first->data, pos.second);
+}
+
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::set_empty(size_type row, size_type col)
 {
     m_store.set_empty(get_pos(row, col), get_pos(row, col));
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::set_empty(size_type row, size_type col, size_type length)
 {
     if (length == 0)
@@ -255,7 +234,7 @@ void multi_type_matrix<Traits>::set_empty(size_type row, size_type col, size_typ
     m_store.set_empty(pos1, pos1 + length - 1);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set_empty(const position_type& pos)
 {
     size_type store_pos = get_pos(pos);
@@ -263,13 +242,13 @@ typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set
     return position_type(it, store_pos - it->position);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::set_column_empty(size_type col)
 {
     m_store.set_empty(get_pos(0, col), get_pos(m_size.row - 1, col));
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::set_row_empty(size_type row)
 {
     for (size_type col = 0; col < m_size.column; ++col)
@@ -279,72 +258,45 @@ void multi_type_matrix<Traits>::set_row_empty(size_type row)
     }
 }
 
-template<typename Traits>
-void multi_type_matrix<Traits>::set(size_type row, size_type col, double val)
+template<mtm::matrix_traits Traits>
+void multi_type_matrix<Traits>::set(size_type row, size_type col, numeric_type val)
 {
     m_store.set(get_pos(row, col), val);
 }
 
-template<typename Traits>
-typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(const position_type& pos, double val)
-{
-    size_type store_pos = get_pos(pos);
-    typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
-    return position_type(it, store_pos - it->position);
-}
-
-template<typename Traits>
-void multi_type_matrix<Traits>::set(size_type row, size_type col, bool val)
-{
-    m_store.set(get_pos(row, col), val);
-}
-
-template<typename Traits>
-typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(const position_type& pos, bool val)
-{
-    size_type store_pos = get_pos(pos);
-    typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
-    return position_type(it, store_pos - it->position);
-}
-
-template<typename Traits>
-void multi_type_matrix<Traits>::set(size_type row, size_type col, const string_type& str)
-{
-    m_store.set(get_pos(row, col), str);
-}
-
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(
-    const position_type& pos, const string_type& str)
-{
-    size_type store_pos = get_pos(pos);
-    typename store_type::iterator it = m_store.set(pos.first, store_pos, str);
-    return position_type(it, store_pos - it->position);
-}
-
-template<typename Traits>
-void multi_type_matrix<Traits>::set(size_type row, size_type col, integer_type val)
-{
-    m_store.set(get_pos(row, col), val);
-}
-
-template<typename Traits>
-typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(
-    const position_type& pos, integer_type val)
+    const position_type& pos, numeric_type val)
 {
     size_type store_pos = get_pos(pos);
     typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
     return position_type(it, store_pos - it->position);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
+template<mtm::detail::listed_value_type<typename mtm::detail::element_blocks_of<Traits>::type> T>
+void multi_type_matrix<Traits>::set(size_type row, size_type col, const T& val)
+{
+    m_store.set(get_pos(row, col), val);
+}
+
+template<mtm::matrix_traits Traits>
+template<mtm::detail::listed_value_type<typename mtm::detail::element_blocks_of<Traits>::type> T>
+typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(const position_type& pos, const T& val)
+{
+    size_type store_pos = get_pos(pos);
+    typename store_type::iterator it = m_store.set(pos.first, store_pos, val);
+    return position_type(it, store_pos - it->position);
+}
+
+template<mtm::matrix_traits Traits>
 template<typename _T>
 void multi_type_matrix<Traits>::set(size_type row, size_type col, const _T& it_begin, const _T& it_end)
 {
     m_store.set(get_pos(row, col), it_begin, it_end);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _T>
 typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set(
     const position_type& pos, const _T& it_begin, const _T& it_end)
@@ -354,7 +306,7 @@ typename multi_type_matrix<Traits>::position_type multi_type_matrix<Traits>::set
     return position_type(it, store_pos - it->position);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _T>
 void multi_type_matrix<Traits>::set_column(size_type col, const _T& it_begin, const _T& it_end)
 {
@@ -372,56 +324,41 @@ void multi_type_matrix<Traits>::set_column(size_type col, const _T& it_begin, co
     m_store.set(pos, it_begin, it_end2);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 typename multi_type_matrix<Traits>::size_pair_type multi_type_matrix<Traits>::size() const
 {
     return m_size;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 multi_type_matrix<Traits>& multi_type_matrix<Traits>::transpose()
 {
     multi_type_matrix tmp(m_size.column, m_size.row);
-    for (size_type old_row_new_col = 0; old_row_new_col < m_size.row; ++old_row_new_col)
+
+    for (auto it_blk = m_store.cbegin(); it_blk != m_store.cend(); ++it_blk)
     {
-        for (size_type old_col_new_row = 0; old_col_new_row < m_size.column; ++old_col_new_row)
-        {
-            switch (get_type(old_row_new_col, old_col_new_row))
+        if (it_blk->type == element_empty)
+            continue;
+
+        dispatch_block(it_blk->type, [&]<typename Blk>() {
+            size_type store_pos = it_blk->position;
+            auto it = Blk::cbegin(*it_blk->data);
+            auto ite = Blk::cend(*it_blk->data);
+
+            for (; it != ite; ++it, ++store_pos)
             {
-                case mtm::element_numeric:
-                {
-                    double val;
-                    m_store.get(get_pos(old_row_new_col, old_col_new_row), val);
-                    tmp.set(old_col_new_row, old_row_new_col, val);
-                }
-                break;
-                case mtm::element_boolean:
-                {
-                    bool val;
-                    m_store.get(get_pos(old_row_new_col, old_col_new_row), val);
-                    tmp.set(old_col_new_row, old_row_new_col, val);
-                }
-                break;
-                case mtm::element_string:
-                {
-                    string_type val;
-                    m_store.get(get_pos(old_row_new_col, old_col_new_row), val);
-                    tmp.set(old_col_new_row, old_row_new_col, val);
-                }
-                break;
-                case mtm::element_empty:
-                    break;
-                default:
-                    throw general_error("multi_type_matrix: unknown element type.");
+                size_type old_col_new_row = store_pos / m_size.row;
+                size_type old_row_new_col = store_pos - m_size.row * old_col_new_row;
+                tmp.m_store.set(tmp.get_pos(old_col_new_row, old_row_new_col), *it);
             }
-        }
+        });
     }
 
     swap(tmp);
     return *this;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::copy(const multi_type_matrix& src)
 {
     if (&src == this)
@@ -456,40 +393,18 @@ void multi_type_matrix<Traits>::copy(const multi_type_matrix& src)
 
             typename store_type::iterator blk_pos;
 
-            switch (to_mtm_type(pos_src.first->type))
+            if (pos_src.first->type == element_empty)
             {
-                case mtm::element_numeric:
-                {
-                    auto it = src_node.template begin<numeric_block_type>();
-                    auto ite = src_node.template end<numeric_block_type>();
-
+                size_type end = logical_pos_dest + section_size - 1;
+                blk_pos = m_store.set_empty(pos_dest.first, logical_pos_dest, end);
+            }
+            else
+            {
+                dispatch_block(pos_src.first->type, [&]<typename Blk>() {
+                    auto it = src_node.template begin<Blk>();
+                    auto ite = src_node.template end<Blk>();
                     blk_pos = m_store.set(pos_dest.first, logical_pos_dest, it, ite);
-                }
-                break;
-                case mtm::element_boolean:
-                {
-                    auto it = src_node.template begin<boolean_block_type>();
-                    auto ite = src_node.template end<boolean_block_type>();
-
-                    blk_pos = m_store.set(pos_dest.first, logical_pos_dest, it, ite);
-                }
-                break;
-                case mtm::element_string:
-                {
-                    auto it = src_node.template begin<string_block_type>();
-                    auto ite = src_node.template end<string_block_type>();
-
-                    blk_pos = m_store.set(pos_dest.first, logical_pos_dest, it, ite);
-                }
-                break;
-                case mtm::element_empty:
-                {
-                    size_type end = logical_pos_dest + section_size - 1;
-                    blk_pos = m_store.set_empty(pos_dest.first, logical_pos_dest, end);
-                }
-                break;
-                default:
-                    throw general_error("multi_type_matrix: unknown element type.");
+                });
             }
 
             remaining_rows -= section_size;
@@ -507,7 +422,7 @@ void multi_type_matrix<Traits>::copy(const multi_type_matrix& src)
     }
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _T>
 void multi_type_matrix<Traits>::copy(size_type rows, size_type cols, const _T& it_begin, const _T& it_end)
 {
@@ -522,7 +437,7 @@ void multi_type_matrix<Traits>::copy(size_type rows, size_type cols, const _T& i
         throw size_error("multi_type_matrix: specified destination size is larger than the current matrix.");
 
     // Ensure that the passed array is supported by this matrix.
-    to_mtm_type(store_type::get_element_type(*it_begin));
+    validate_type(store_type::get_element_type(*it_begin));
 
     auto it = it_begin;
     position_type pos_dest = position(0, 0);
@@ -539,7 +454,7 @@ void multi_type_matrix<Traits>::copy(size_type rows, size_type cols, const _T& i
     }
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::resize(size_type rows, size_type cols)
 {
     if (!rows || !cols)
@@ -555,7 +470,7 @@ void multi_type_matrix<Traits>::resize(size_type rows, size_type cols)
     temp.swap(*this);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename _T>
 void multi_type_matrix<Traits>::resize(size_type rows, size_type cols, const _T& value)
 {
@@ -572,7 +487,7 @@ void multi_type_matrix<Traits>::resize(size_type rows, size_type cols, const _T&
     temp.swap(*this);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::clear()
 {
     m_store.clear();
@@ -580,42 +495,40 @@ void multi_type_matrix<Traits>::clear()
     m_size.column = 0;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 bool multi_type_matrix<Traits>::numeric() const
 {
+    return all_of<numeric_block_type>();
+}
+
+template<mtm::matrix_traits Traits>
+template<typename... Blks>
+bool multi_type_matrix<Traits>::all_of() const
+{
+    static_assert(
+        (mtm::detail::is_block_in_list<Blks, block_list_type>::value && ...),
+        "Every block type must be an element block of this matrix.");
+
     if (m_store.empty())
         return false;
 
-    typename store_type::const_iterator i = m_store.begin(), iend = m_store.end();
-    for (; i != iend; ++i)
+    for (auto it = m_store.cbegin(); it != m_store.cend(); ++it)
     {
-        mtv::element_t mtv_type = i->type;
-        switch (mtv_type)
-        {
-            case mtv::element_type_double:
-            case mtv::element_type_boolean:
-            case integer_block_type::block_type:
-                // These are numeric types.
-                continue;
-            case string_block_type::block_type:
-            case mtv::element_type_empty:
-                // These are not.
-                return false;
-            default:
-                throw general_error("multi_type_matrix: unknown element type.");
-        }
+        bool matched = ((it->type == Blks::block_type) || ...);
+        if (!matched)
+            return false;
     }
 
     return true;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 bool multi_type_matrix<Traits>::empty() const
 {
     return m_store.empty();
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 void multi_type_matrix<Traits>::swap(multi_type_matrix& r)
 {
     m_store.swap(r.m_store);
@@ -623,7 +536,7 @@ void multi_type_matrix<Traits>::swap(multi_type_matrix& r)
     std::swap(m_size.column, r.m_size.column);
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename FuncT>
 FuncT multi_type_matrix<Traits>::walk(FuncT func) const
 {
@@ -632,7 +545,7 @@ FuncT multi_type_matrix<Traits>::walk(FuncT func) const
     return func;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename FuncT>
 FuncT multi_type_matrix<Traits>::walk(FuncT func, const size_pair_type& start, const size_pair_type& end) const
 {
@@ -680,7 +593,7 @@ FuncT multi_type_matrix<Traits>::walk(FuncT func, const size_pair_type& start, c
     return func;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename FuncT>
 FuncT multi_type_matrix<Traits>::walk(FuncT func, const multi_type_matrix& right) const
 {
@@ -715,7 +628,7 @@ FuncT multi_type_matrix<Traits>::walk(FuncT func, const multi_type_matrix& right
     return func;
 }
 
-template<typename Traits>
+template<mtm::matrix_traits Traits>
 template<typename FuncT>
 FuncT multi_type_matrix<Traits>::walk(
     FuncT func, const multi_type_matrix& right, const size_pair_type& start, const size_pair_type& end) const
@@ -766,6 +679,38 @@ FuncT multi_type_matrix<Traits>::walk(
     }
 
     return func;
+}
+
+template<mtm::matrix_traits Traits>
+void multi_type_matrix<Traits>::validate_type(mtm::element_t type)
+{
+    auto is_listed = [type]<typename... Blks>(std::tuple<Blks...>*) { return ((Blks::block_type == type) || ...); };
+
+    if (!is_listed(static_cast<block_list_type*>(nullptr)))
+        throw type_error("multi_type_matrix: unknown element type.");
+}
+
+template<mtm::matrix_traits Traits>
+template<typename FuncT>
+void multi_type_matrix<Traits>::dispatch_block(mtm::element_t type, FuncT&& func)
+{
+    auto call_matching = [type, &func]<typename... Blks>(std::tuple<Blks...>*) {
+        return ((Blks::block_type == type ? (func.template operator()<Blks>(), true) : false) || ...);
+    };
+
+    if (!call_matching(static_cast<block_list_type*>(nullptr)))
+        throw type_error("multi_type_matrix: unknown element type.");
+}
+
+template<mtm::matrix_traits Traits>
+template<typename T>
+typename multi_type_matrix<Traits>::store_type multi_type_matrix<Traits>::create_store(
+    size_type init_size, const T& it_begin, const T& it_end)
+{
+    if (it_begin != it_end)
+        validate_type(store_type::get_element_type(*it_begin));
+
+    return store_type(init_size, it_begin, it_end);
 }
 
 } // namespace mdds

@@ -7,6 +7,7 @@ cities.bin
 flat-segment-tree
 flat-segment-tree-itrs
 multi-type-matrix
+multi-type-matrix-custom
 packed-trie-map
 packed-trie-state-custom
 packed-trie-state-int

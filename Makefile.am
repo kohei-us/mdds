@@ -64,7 +64,9 @@ EXTRA_DIST = \
 	doc/flat_segment_tree/quickstart.rst \
 	doc/global.rst \
 	doc/index.rst \
-	doc/multi_type_matrix.rst \
+	doc/multi_type_matrix/api.rst \
+	doc/multi_type_matrix/custom-types.rst \
+	doc/multi_type_matrix/index.rst \
 	doc/multi_type_vector/api-ref.rst \
 	doc/multi_type_vector/copy-on-write.rst \
 	doc/multi_type_vector/debugging.rst \
