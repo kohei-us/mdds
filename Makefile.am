@@ -66,6 +66,7 @@ EXTRA_DIST = \
 	doc/index.rst \
 	doc/multi_type_matrix/api.rst \
 	doc/multi_type_matrix/custom-types.rst \
+	doc/multi_type_matrix/traits.rst \
 	doc/multi_type_matrix/index.rst \
 	doc/multi_type_vector/api-ref.rst \
 	doc/multi_type_vector/copy-on-write.rst \
