@@ -2276,6 +2276,9 @@ void fst_test_segment_iterator()
     db_type::const_segment_iterator it = db.begin_segment();
     db_type::const_segment_iterator ite = db.end_segment();
 
+    // An iterator not attached to any tree converts to an empty segment iterator.
+    TEST_ASSERT(db_type::const_iterator().to_segment() == db_type::const_segment_iterator());
+
     TEST_ASSERT(it != ite);
     TEST_ASSERT(it->start == 0);
     TEST_ASSERT(it->end == 100);

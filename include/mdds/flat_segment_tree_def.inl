@@ -10,7 +10,10 @@ typename flat_segment_tree<Key, Value>::const_segment_iterator flat_segment_tree
 {
     const node* pos = get_pos();
     const auto* parent = get_parent();
-    if (!parent || is_end_pos() || !pos || !pos->next)
+    if (!parent)
+        return const_segment_iterator();
+
+    if (is_end_pos() || !pos || !pos->next)
         return parent->end_segment();
 
     return const_segment_iterator(pos, pos->next.get());
