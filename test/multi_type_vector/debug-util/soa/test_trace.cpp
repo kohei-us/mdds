@@ -103,6 +103,7 @@ using mtv_type = mdds::mtv::soa::multi_type_vector<mtv_custom_traits>;
 
 } // anonymous namespace
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     {

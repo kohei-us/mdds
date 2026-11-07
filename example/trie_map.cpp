@@ -7,6 +7,7 @@
 #include <mdds/trie_map.hpp>
 #include <iostream>
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     //!code-start: type

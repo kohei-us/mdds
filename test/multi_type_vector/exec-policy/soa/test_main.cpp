@@ -45,6 +45,7 @@ void test_shrink_to_fit()
     store.shrink_to_fit();
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_copy_construction_and_equal();

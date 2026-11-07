@@ -382,6 +382,7 @@ void ssmap_test_perf()
     }
 }
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main(int argc, char** argv)
 {
     cmd_options opt;

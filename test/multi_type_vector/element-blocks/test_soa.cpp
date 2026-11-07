@@ -6,6 +6,7 @@
 
 #include "test_soa.hpp"
 
+// coverity[root_function] : don't warn about uncaught exceptions
 int main()
 {
     test_mtv_basic();
