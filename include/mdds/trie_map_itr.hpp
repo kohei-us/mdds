@@ -399,7 +399,7 @@ class search_results
     key_type m_buffer;
     node_stack_type m_node_stack;
 
-    search_results(const trie_node* node, key_type&& buf) : m_node(node), m_buffer(buf)
+    search_results(const trie_node* node, key_type&& buf) : m_node(node), m_buffer(std::move(buf))
     {}
 
 public:

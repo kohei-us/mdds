@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include <utility>
 
 #define DEBUG_POINT_QUAD_TREE 0
 
@@ -100,7 +101,7 @@ private:
     struct node : quad_node_base<node_ptr, node, key_type>
     {
         value_type data;
-        node(key_type _x, key_type _y, value_type _data) : quad_node_base<node_ptr, node, key_type>(_x, _y), data(_data)
+        node(key_type _x, key_type _y, value_type _data) : quad_node_base<node_ptr, node, key_type>(_x, _y), data(std::move(_data))
         {}
 
         node(const node& r) : quad_node_base<node_ptr, node, key_type>(r), data(r.data)
@@ -636,7 +637,7 @@ void point_quad_tree<Key, Value>::insert(key_type x, key_type y, value_type data
     if (!m_root)
     {
         // The very first node.
-        m_root.reset(new node(x, y, data));
+        m_root.reset(new node(x, y, std::move(data)));
         return;
     }
 
@@ -646,7 +647,7 @@ void point_quad_tree<Key, Value>::insert(key_type x, key_type y, value_type data
         if (cur_node->x == x && cur_node->y == y)
         {
             // Replace the current data with this, and we are done!
-            cur_node->data = data;
+            cur_node->data = std::move(data);
             return;
         }
 
@@ -658,7 +659,7 @@ void point_quad_tree<Key, Value>::insert(key_type x, key_type y, value_type data
                     cur_node = cur_node->northeast;
                 else
                 {
-                    cur_node->northeast.reset(new node(x, y, data));
+                    cur_node->northeast.reset(new node(x, y, std::move(data)));
                     cur_node->northeast->parent = cur_node;
                     return;
                 }
@@ -668,7 +669,7 @@ void point_quad_tree<Key, Value>::insert(key_type x, key_type y, value_type data
                     cur_node = cur_node->northwest;
                 else
                 {
-                    cur_node->northwest.reset(new node(x, y, data));
+                    cur_node->northwest.reset(new node(x, y, std::move(data)));
                     cur_node->northwest->parent = cur_node;
                     return;
                 }
@@ -678,7 +679,7 @@ void point_quad_tree<Key, Value>::insert(key_type x, key_type y, value_type data
                     cur_node = cur_node->southeast;
                 else
                 {
-                    cur_node->southeast.reset(new node(x, y, data));
+                    cur_node->southeast.reset(new node(x, y, std::move(data)));
                     cur_node->southeast->parent = cur_node;
                     return;
                 }
@@ -688,7 +689,7 @@ void point_quad_tree<Key, Value>::insert(key_type x, key_type y, value_type data
                     cur_node = cur_node->southwest;
                 else
                 {
-                    cur_node->southwest.reset(new node(x, y, data));
+                    cur_node->southwest.reset(new node(x, y, std::move(data)));
                     cur_node->southwest->parent = cur_node;
                     return;
                 }

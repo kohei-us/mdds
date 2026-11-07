@@ -535,7 +535,7 @@ public:
         value_type value;
 
         entry(const key_unit_type* _key, size_type _keylen, value_type _value)
-            : key(_key), keylen(_keylen), value(_value)
+            : key(_key), keylen(_keylen), value(std::move(_value))
         {}
     };
 

@@ -734,11 +734,7 @@ public:
         std::advance(it2, pos2);
 
         for (size_t i = 0; i < len; ++i, ++it1, ++it2)
-        {
-            value_type v1 = *it1, v2 = *it2;
-            *it1 = v2;
-            *it2 = v1;
-        }
+            std::iter_swap(it1, it2);
     }
 
     static bool equal_block(const base_element_block& left, const base_element_block& right)
