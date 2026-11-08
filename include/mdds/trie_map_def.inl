@@ -1024,7 +1024,6 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_range(
 {
     const entry* p = start;
     const entry* range_start = start;
-    const entry* range_end = nullptr;
     key_unit_type range_char = 0;
     size_type range_count = 0;
 
@@ -1047,14 +1046,13 @@ void packed_trie_map<KeyT, ValueT, TraitsT>::traverse_range(
         else if (range_char != c)
         {
             // End of current character range.
-            range_end = p;
+            const entry* range_end = p;
 
             node_pool.emplace_back(range_char);
             root.children.push_back(&node_pool.back());
             traverse_range(*root.children.back(), node_pool, range_start, range_end, pos + 1);
             range_start = range_end;
             range_char = range_start->key[pos];
-            range_end = nullptr;
             range_count = 1;
         }
     }
