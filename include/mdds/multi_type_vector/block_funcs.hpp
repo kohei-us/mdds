@@ -101,10 +101,16 @@ struct element_block_funcs
         static const std::unordered_map<element_t, std::function<void(const base_element_block*)>> func_map{
             {Ts::block_type, Ts::delete_block}...};
 
-        // TODO: We should not throw an exception here as this gets called
-        // from a destructor and destructors should not throw exceptions.
-        auto& f = detail::find_func(func_map, get_block_type(*p), __func__);
-        f(p);
+        // This gets called from a destructor, so an unknown block type only
+        // asserts.
+        auto it = func_map.find(get_block_type(*p));
+        if (it == func_map.end())
+        {
+            assert(!"delete_block: failed to map to an element block function");
+            return;
+        }
+
+        it->second(p);
     }
 
     static void resize_block(base_element_block& block, std::size_t new_size)
