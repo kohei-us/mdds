@@ -15,25 +15,16 @@ int main() try
 {
     typedef ::mdds::point_quad_tree<double, std::string> db_type;
     db_type db;
-    
-    std::string chicago("Chicago");
-    std::string hamburg("Hamburg");
-    std::string helsinki("Helsinki");
-    std::string london("London");
-    std::string paris("Paris");
-    std::string prague("Prague");
-    std::string shanghai("Shanghai");
-    std::string tokyo("Tokyo");
 
     // insert cities by longitude and latitude.
-    db.insert(-87.755280, 41.784168, chicago);
-    db.insert(10.000000, 53.633331, hamburg);
-    db.insert(25.049999, 60.250000, helsinki);
-    db.insert(-0.450000, 51.483334, london);
-    db.insert(2.450000, 48.966667, paris);
-    db.insert(14.250000, 50.099998, prague);
-    db.insert(121.433334, 31.166668, shanghai);
-    db.insert(139.850006, 35.633331, tokyo);
+    db.insert(-87.755280, 41.784168, "Chicago");
+    db.insert(10.000000, 53.633331, "Hamburg");
+    db.insert(25.049999, 60.250000, "Helsinki");
+    db.insert(-0.450000, 51.483334, "London");
+    db.insert(2.450000, 48.966667, "Paris");
+    db.insert(14.250000, 50.099998, "Prague");
+    db.insert(121.433334, 31.166668, "Shanghai");
+    db.insert(139.850006, 35.633331, "Tokyo");
 
     // Perform region search.
     db_type::search_results results = db.search_region(100, 30, 140, 40);
