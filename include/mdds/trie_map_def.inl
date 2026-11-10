@@ -86,7 +86,8 @@ struct dump_packed_buffer
 
     void operator()(std::ostream& os, const packed_type& packed)
     {
-        os << std::setfill('0') << "---\n"
+        auto old_fill = os.fill('0');
+        os << "---\n"
            << "# packed buffer layout\n"
            << "buffer size: " << packed.size() << "\n"
            << "layout:" << std::endl;
@@ -149,6 +150,7 @@ struct dump_packed_buffer
         } handler(os, width);
 
         traverse_packed_buffer<packed_type, _handler>{}(packed, handler);
+        os.fill(old_fill);
     }
 };
 
