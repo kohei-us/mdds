@@ -34,8 +34,8 @@ int main() try
     for (const auto& res : results)
     {
         cout << "  " << res.second
-             << ": (latitude=" << res.first.x
-             << ", longitude=" << res.first.y << ")" << endl;
+             << ": (longitude=" << res.first.x
+             << ", latitude=" << res.first.y << ")" << endl;
     }
 }
 catch (...)
