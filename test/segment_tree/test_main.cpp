@@ -125,7 +125,7 @@ std::vector<ValueT> to_vector(const ResT& results)
  * needs to run search and pass the result to this function.
  */
 template<typename KeyT, typename ValueT>
-bool check_search_result_only(std::vector<ValueT> results, KeyT key, ValueT* expected)
+bool check_search_result_only(const std::vector<ValueT>& results, KeyT key, ValueT* expected)
 {
     cout << "search key: " << key << " ";
 

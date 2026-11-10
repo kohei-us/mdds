@@ -10,6 +10,7 @@
 #include <sstream>
 #include <vector>
 #include <deque>
+#include <utility>
 
 using namespace std;
 using namespace mdds;
@@ -81,7 +82,7 @@ void mtv_perf_test_insert_via_position_object()
         }
     }
 
-    db2 = db;
+    db2 = std::move(db);
     {
         stack_printer __stack_printer__("::mtv_perf_test_insert_via_position_object insert via position object.");
         mtv_type::position_type pos = db2.position(0);

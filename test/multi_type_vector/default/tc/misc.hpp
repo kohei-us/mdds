@@ -25,7 +25,7 @@ enum test_mtv_type
 };
 
 #define TEST_TYPE(_type_, _type_enum_) \
-    test_mtv_type test_type(_type_) \
+    test_mtv_type test_type(const _type_&) \
     { \
         return _type_enum_; \
     }

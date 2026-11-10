@@ -345,10 +345,7 @@ void mtm_test_data_insertion_integer()
 
     std::vector<mtx_type::element_block_node_type> nodes;
 
-    std::function<void(const mtx_type::element_block_node_type&)> f =
-        [&nodes](const mtx_type::element_block_node_type& node) { nodes.push_back(node); };
-
-    mtx.walk(f);
+    mtx.walk([&nodes](const mtx_type::element_block_node_type& node) { nodes.push_back(node); });
 
     TEST_ASSERT(nodes.size() == 3);
     TEST_ASSERT(nodes[0].type == mtv::element_type_int32);

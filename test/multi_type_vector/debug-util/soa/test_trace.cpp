@@ -6,6 +6,7 @@
 
 #include "test_global.hpp" // This must be the first header to be included.
 #include <iostream>
+#include <utility>
 
 #define MDDS_MULTI_TYPE_VECTOR_TRACE 1
 #include <mdds/multi_type_vector/soa/main.hpp>
@@ -95,7 +96,7 @@ struct mtv_custom_traits : public mdds::mtv::standard_element_blocks_traits
             std::string rest = func_name.substr(9);
             func_name = "operator" + rest;
         }
-        observed.push_back({props.instance, func_name, props.type});
+        observed.push_back({props.instance, std::move(func_name), props.type});
     }
 };
 

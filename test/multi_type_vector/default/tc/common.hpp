@@ -18,7 +18,7 @@
 #include <vector>
 
 template<typename mtv_type, typename ValT>
-bool test_cell_insertion(mtv_type& col_db, std::size_t row, ValT val)
+bool test_cell_insertion(mtv_type& col_db, std::size_t row, const ValT& val)
 {
     ValT test;
     col_db.set(row, val);
