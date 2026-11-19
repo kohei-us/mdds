@@ -1,4 +1,4 @@
-mdds 4.0.0 (next target)
+mdds 4.0.0
 
 * general
 
@@ -129,6 +129,25 @@ mdds 4.0.0 (next target)
   * the constructor now takes the entries as std::span, and find()
     accepts std::string_view.  The pointer and length overloads are
     deprecated.
+
+  * the constructor and the find(), find_key() and size() methods are
+    now constexpr, which makes the map usable in constant expressions
+    when the default linear_key_finder is used, the value type is a
+    literal type, and the entry array is constexpr.
+
+* flat_segment_tree
+
+  * fixed a null pointer dereference in const_iterator::to_segment()
+    when called on a default-constructed iterator.  It now returns a
+    default-constructed segment iterator.
+
+  * removed the deprecated is_tree_valid() method.  Use valid_tree()
+    instead.
+
+* point_quad_tree
+
+  * fixed a size-mismatched delete of the tree nodes, which were
+    deleted through a pointer to their base type.
 
 mdds 3.2.1
 
