@@ -109,6 +109,12 @@ multi_type_matrix
   no longer accepted for a ``std::string`` block; wrap it in
   ``std::string``.
 
+flat_segment_tree
+^^^^^^^^^^^^^^^^^
+
+* The ``is_tree_valid()`` method, deprecated since 3.2.1, has been removed.
+  Use ``valid_tree()`` instead.
+
 trie_map & packed_trie_map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 

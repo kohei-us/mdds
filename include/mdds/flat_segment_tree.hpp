@@ -428,7 +428,7 @@ public:
 
     /**
      * Perform tree search for a value associated with a key.  This method
-     * assumes that the tree is valid.  Call is_tree_valid() to find out
+     * assumes that the tree is valid.  Call valid_tree() to find out
      * whether the tree is valid, and build_tree() to build a new tree in case
      * it's not.
      *
@@ -472,18 +472,6 @@ public:
      *         valid before you can call the search_tree() method.
      */
     bool valid_tree() const noexcept
-    {
-        return m_valid_tree;
-    }
-
-    /**
-     * @deprecated Use valid_tree() instead.
-     *
-     * @return true if the tree is valid, otherwise false.  The tree must be
-     *         valid before you can call the search_tree() method.
-     */
-    [[deprecated("Use valid_tree() instead")]]
-    bool is_tree_valid() const noexcept
     {
         return m_valid_tree;
     }
