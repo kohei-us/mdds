@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2026 Kohei Yoshida
+
+SPDX-License-Identifier: MIT
+-->
+
 # multi_type_vector copy-on-write (COW) design notes
 
 This document details the non-obvious design choices behind the
